@@ -1,0 +1,133 @@
+﻿
+
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="manufacturername"> من تاريخ </label>
+                            <input id="manufacturername" name="dateFrom" type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="manufacturername">الى تاريخ  </label>
+                            <input id="manufacturername" name="dateTo" type="date" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 float-end">
+                    <button type="button" onclick="Search()" class="btn btn-primary waves-effect waves-light">بحث </button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">الحضور والانصراف </h4>
+
+
+                <table id="datatable" class="table ">
+                    <thead>
+                        <tr>
+                            <th>كود الموظف</th>
+                            <th>الموظف</th>
+                            <th>الفرع</th>
+                            <th>التاريخ والوقت</th>
+                            <th>حضور ام انصراف</th>
+                            @*<th> الوظيفة</th>*@
+                            @*<th> الفرع</th>*@
+                            @*<th> فتره العمل</th>*@
+                            @*<th> موقع العمل</th>*@
+
+                        </tr>
+                    </thead>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+
+
+@section Scripts
+{
+
+
+    <script>
+
+
+
+        let tbl;
+        $(() => {
+            
+            tbl = $('#datatable').DataTable(LoadDataTableObj(`@Url.GetAction("LoadAttendanceData")`,
+                [
+
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.code ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.name ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.store ?? "") + '</label>'
+                        }
+                    }
+               ,
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.date ?? "") + '</label>'
+                        }
+                    }
+               ,
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.inOrOut ?? "") + '</label>'
+                        }
+                    }
+
+
+                ]
+            )
+            );
+
+    });
+
+        function Search() {
+            let dateFrom = $('[name="dateFrom"]').val();
+            let dateTo = $('[name="dateTo"]').val();
+            tbl.ajax.url(`@Url.GetAction("LoadAttendanceData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null,false);
+        }
+
+
+    </script>
+}

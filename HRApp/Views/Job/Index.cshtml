@@ -1,0 +1,296 @@
+﻿
+
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-md-3">
+                        <h4 class="card-title">اضافة  وظيفة   </h4>
+                    </div>
+              
+
+                    <div class="col-md-6 d-flex justify-content-center text-center">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous" onclick="Navgate(counts, false)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="First" onclick="Navgate(1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 8px;" class="fa fa-chevron-right"></i></span>
+                                    </a>
+                                </li>
+
+                                <li class="page-item"><a class="page-link" href="" id="pageNumber"></a></li>
+
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Last" onclick="Navgate(-1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 9px;" class="fa fa-chevron-left"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next" onclick="Navgate(1, false)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="d-flex flex-wrap gap-2 float-end">
+                          
+                            <button class="btn btn-success btn-sm" type="button" onclick="funcCancel()">جديد</button>
+                            <button type="button" onclick="Save()" class="btn btn-primary waves-effect waves-light">حفظ </button>
+                            <button class="btn btn-danger btn-sm" type="button" onclick="funPublicDelete()">حذف</button>
+                        </div>
+                    </div>
+                </div>
+                <form id="frmCreate" onsubmit="return false;">
+                    <div class="row">
+                        <input type="hidden" name="JobId" />
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form ">
+                                <label for="manufacturername">كود الوظيفة </label>
+                                <input id="manufacturername" name="Jcode" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> اسم الوظيفة</label>
+                                <input id="productname" name="Jname1" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form ">
+                                <label for="productname">  اسم الوظيفة انجلزى</label>
+                                <input id="productname" name="Jname2" type="text" class="form-control">
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+               
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="row list-grid">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">الوظائف </h4>
+
+
+                <table id="datatable" class="table ">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الاسم انجلزى</th>
+                            <th>#</th>
+
+                        </tr>
+                    </thead>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+@section Scripts
+{
+    
+
+    <script>
+
+
+    function Save() {
+        let sendData = $('#frmCreate').serialize();
+        $.post('@Url.Action("Add")?' + sendData, {}, function (res) {
+            excuteResponse(res);
+            reloadDataTable();
+            if (res.status == 200) {
+                $('[name="JobId"]').val("0");
+            }
+        });
+    }
+
+
+        let tbl;
+        let frm = $('#frmCreate');
+    $(() => {
+        tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadData")',
+                [
+
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.code ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.name ?? "") + '</label>'
+                        }
+                    },  {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.nameE ?? "") + '</label>'
+                        }
+                    },
+                 {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+
+                            return `  <a class="btn btn-outline-secondary btn-sm edit" data-id='${data.id}'onclick="displayDataForEdit('${data.id}')" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                    <a class="btn btn-outline-danger btn-sm delete" onclick='funDelete("${data.id}")' title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>`;
+                        }
+                    }
+
+                ]
+            )
+            );
+        $('#datatable').find('tbody').on('click', 'tr', function () {
+            let elem = $(this);
+            let id = elem.find('.edit').attr('data-id');
+
+            elem.closest('tbody').find('tr').css('background-color', 'white');
+            elem.css('background-color', '#a2a9bd');
+
+
+            displayDataForEdit(id);
+        });
+    });
+
+        function funDelete(id) {
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("Delete")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="JobId"]').val("0");
+
+                }));
+            });
+        }
+
+       function displayDataForEdit(id) {
+
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("DisplayDataForEdit")';
+            $.ajax(getAjaxObject(url, frmData, (res) => {
+                BindData(res);
+
+            }));
+        }
+
+        function BindData(res) {
+            $('html,body').animate({ scrollTop: 0 }, 500, 'swing', function () {
+                frm.serializeArray().forEach(x => {
+
+                    if ($(`[name="${x.name}"]`).prop('type').includes('select')) {
+                        $(`[name="${x.name}"]`).val(res[lowerFirstLetter(x.name)]).change();
+                    }
+                    else
+                        $(`[name="${x.name}"]`).val(res[lowerFirstLetter(x.name)]);
+                });
+                $('[name="Jcode"]').prop('readonly', true);
+            });
+        }
+
+
+           function funPublicDelete() {
+            event.preventDefault();
+
+            let checkItem = $('[name="JobId"]').val();
+            if (checkItem == 0) {
+                swal.fire({
+                    title: "خطأ",
+                    html: 'اختر العنصر الذى تريد حذفة',
+                    icon: "error"
+                });
+                return;
+            }
+
+            let frmData = new FormData();
+            frmData.append('id', checkItem);
+            let url = '@Url.GetAction("Delete")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="JobId"]').val("0");
+
+
+                }));
+            });
+        }
+
+        let counts = '@(ViewData["Count"])';
+        let num = 0;
+        $(() => {
+            $('#pageNumber').html(num + "/" + counts);
+        });
+
+        function Navgate(xi, stepByStep) {
+            debugger;
+            $('#mdlSearch').modal('hide');
+
+            if (stepByStep) {
+
+                if (xi < 0 && num == 1)
+                    return;
+                else if (xi > 0 && num == counts)
+                    return;
+
+                num = parseInt(num) + parseInt(xi);
+            }
+            else
+                num = xi;
+
+            let frmData = new FormData();
+            frmData.append('index', num);
+            let url = '@Url.GetAction("GetItemByIndex")';
+             $.ajax(getAjaxObject(url, frmData, (res) => {
+                 $('#pageNumber').html(num + "/" + counts)
+
+                 BindData(res);
+
+                 $(`.edit`).closest('tbody').find('tr').css('background-color', 'white');
+                 $(`.edit[data-id="${res.jobId}"]`).closest('tr').css('background-color', '#a2a9bd');
+            }));
+        }
+
+    </script>
+}

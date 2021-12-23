@@ -1,0 +1,313 @@
+﻿            <!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 font-size-18">تقرير الخصومات</h4>
+
+
+
+        </div>
+    </div>
+</div>
+<!-- end page title -->
+
+
+<div class="checkout-tabs">
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-gen-ques-tab"
+                   onclick="report(1)"
+                   data-bs-toggle="pill" href="#day" role="tab" aria-controls="v-pills-gen-ques" aria-selected="false">
+                    <i class="bx bx-calendar d-block check-nav-icon mt-4 mb-2"></i>
+                    <p class="fw-bold mb-4">يومى</p>
+                </a>
+                <a class="nav-link" onclick="report(2)" id="v-pills-privacy-tab" data-bs-toggle="pill"  role="tab" aria-controls="v-pills-privacy" aria-selected="false">
+                    <i class="bx bx-calendar d-block check-nav-icon mt-4 mb-2"></i>
+                    <p class="fw-bold mb-4">اسبوعى</p>
+                </a>
+                <a class="nav-link " onclick="report(3)" id="v-pills-support-tab" data-bs-toggle="pill"  role="tab" aria-controls="v-pills-support" aria-selected="true">
+                    <i class="bx bx-calendar d-block check-nav-icon mt-4 mb-2"></i>
+                    <p class="fw-bold mb-4">شهرى</p>
+                </a>
+
+                <a class="nav-link " onclick="report(4)" id="v-pills-support-tab" data-bs-toggle="pill"  role="tab" aria-controls="v-pills-support" aria-selected="true">
+                    <i class="bx bx-calendar check-nav-icon mt-4 mb-2"></i>
+                    <p class="fw-bold mb-4">سنوى</p>
+                </a>
+
+            </div>
+        </div>
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-body">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade active show" id="day" role="tabpanel" aria-labelledby="v-pills-support-tab">
+                            <h4 class="card-title mb-5">يومى</h4>
+
+                            <table id="Datatable1" class="table ">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>ساعة</th>
+                                        <th>دقيقة</th>
+                                        <th>الخصومات</th>
+                                
+
+                                    </tr>
+                                </thead>
+
+
+                            </table>
+                        </div>
+
+                        <div class="tab-pane fade" id="week" role="tabpanel" aria-labelledby="v-pills-gen-ques-tab">
+                            <h4 class="card-title mb-5">اسبوعى</h4>
+                            <table id="Datatable2" class="table ">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>ساعة</th>
+                                        <th>دقيقة</th>
+                                        <th>الخصومات</th>
+
+
+                                    </tr>
+                                </thead>
+
+
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="month" role="tabpanel" aria-labelledby="v-pills-gen-ques-tab">
+                            <h4 class="card-title mb-5">شهرى</h4>
+
+                            <table id="Datatable3" class="table ">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>ساعة</th>
+                                        <th>دقيقة</th>
+                                        <th>الخصومات</th>
+
+
+                                    </tr>
+                                </thead>
+
+
+                            </table>
+
+                        </div>
+                        <div class="tab-pane fade" id="year" role="tabpanel" aria-labelledby="v-pills-gen-ques-tab">
+                            <h4 class="card-title mb-5">سنوى</h4>
+                            <table id="Datatable4" class="table ">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>ساعة</th>
+                                        <th>دقيقة</th>
+                                        <th>الخصومات</th>
+
+
+                                    </tr>
+                                </thead>
+
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+
+    <script>
+        let Datatable1;
+        let Datatable2;
+        let Datatable3;
+        let Datatable4;
+        function report(id) {
+            $('.tab-pane').removeClass("active")
+            $('.tab-pane').removeClass("show")
+            if (id == 1) {
+
+                if (Datatable1 == null)
+                     Datatable1 = $(`#Datatable${id}`).DataTable(LoadDataTableObj(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`,
+                        [
+
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.employeeName ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.hour ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.minute ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delayCost ?? "") + '</label>'
+                                }
+                            }
+
+                        ]
+                    )
+                    );
+                else
+                    Datatable1.ajax.url(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`).load();
+
+
+                $('#day').addClass("active show");
+            }
+
+            if (id == 2) {
+                if (Datatable2 == null)
+                      Datatable2 = $(`#Datatable${id}`).DataTable(LoadDataTableObj(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`,
+                        [
+
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.employeeName ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.hour ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.minute ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delayCost ?? "") + '</label>'
+                                }
+                            }
+
+                        ]
+                    )
+                    );
+                else
+                    Datatable2.ajax.url(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`).load();
+
+                $('#week').addClass("active show");
+            }
+            if (id == 3) {
+                if (Datatable3 == null)
+                    Datatable3 = $(`#Datatable${id}`).DataTable(LoadDataTableObj(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`,
+                        [
+
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.employeeName ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.hour ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.minute ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delayCost ?? "") + '</label>'
+                                }
+                            }
+
+                        ]
+                    )
+                    );
+                else
+                    Datatable3.ajax.url(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`).load();
+
+                $('#month').addClass("active show");
+            }
+
+            if (id == 4) {
+                if (Datatable4 == null)
+                     Datatable4 = $(`#Datatable${id}`).DataTable(LoadDataTableObj(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`,
+                        [
+
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.employeeName ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.hour ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delay.minute ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.delayCost ?? "") + '</label>'
+                                }
+                            }
+
+                        ]
+                    )
+                    );
+                else
+                    Datatable4.ajax.url(`@Url.GetAction("LoadDelayReportData")?reportType=${id}`).load();
+
+                $('#year').addClass("active show");
+            }
+        }
+
+
+        $(() => { report(1); });
+
+    </script>
+
+}

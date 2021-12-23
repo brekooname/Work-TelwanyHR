@@ -1,0 +1,103 @@
+﻿            <!-- start page title -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-flex align-items-center justify-content-between">
+            <h4 class="mb-0 font-size-18">تقرير   الخصومات المفصل</h4>
+
+
+
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+
+
+                <table id="Datatable" class="table text-center table-bordered">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>يومى</th>
+                            <th>اسبوعى</th>
+                            <th>شهرى</th>
+                            <th>سنوى</th>
+                  
+
+                        </tr>
+                    </thead>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+@section Scripts
+{
+    <script>
+
+        $(() => {
+
+        
+                     $(`#Datatable`).DataTable(LoadDataTableObj('@Url.GetAction("LoadDelayDetailsReportData")',
+                        [
+
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return '<label>' + (data.employeeName ?? "") + '</label>'
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return `<table class="table"><thead><tr><th>ساعة</th><th>دقيقة</th><th>خصم</th></tr></thead>
+<tbody><tr><td>${data.day.delay.hour}</td><td>${data.day.delay.minute}</td><td>${data.day.delayCost}</td></tr></tbody>
+</table>`
+                                }
+                            }
+                            ,
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return `<table class="table"><thead><tr><th>ساعة</th><th>دقيقة</th><th>خصم</th></tr></thead>
+<tbody><tr><td>${data.week.delay.hour}</td><td>${data.week.delay.minute}</td><td>${data.week.delayCost}</td></tr></tbody>
+</table>`
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return `<table class="table"><thead><tr><th>ساعة</th><th>دقيقة</th><th>خصم</th></tr></thead>
+<tbody><tr><td>${data.month.delay.hour}</td><td>${data.month.delay.minute}</td><td>${data.month.delayCost}</td></tr></tbody>
+</table>`
+                                }
+                            },
+                            {
+                                data: null,
+                                bSortable: false,
+                                render: function (data, type, row) {
+                                    return `<table class="table"><thead><tr><th>ساعة</th><th>دقيقة</th><th>خصم</th></tr></thead>
+<tbody><tr><td>${data.year.delay.hour}</td><td>${data.year.delay.minute}</td><td>${data.year.delayCost}</td></tr></tbody>
+</table>`
+                                }
+                            }
+
+                        ]
+                    )
+                    );
+            
+
+        })
+
+    </script>
+}

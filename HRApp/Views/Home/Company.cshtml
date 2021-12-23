@@ -1,0 +1,149 @@
+﻿@model HR.Tables.Tables.MsCompany
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-md-3">
+                        <h4 class="card-title">   بيانات الشركة   </h4>
+                    </div>
+             
+
+                </div>
+
+                <form id="frmCreate" onsubmit="return false;">
+                    <div class="row">
+                        <input type="hidden" name="CompanyId" value="@Model.CompanyId" />
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> اسم الشركة</label>
+                                <input id="productname" name="CompNameA" type="text" class="form-control" value="@Model.CompNameA">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  اسم الشركة انجلزى</label>
+                                <input id="productname" name="CompNameE" type="text" class="form-control" value="@Model.CompNameE">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  لوجو الشركة </label>
+                                <input id="productname" name="File" type="file" class="form-control">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  هاتف 1</label>
+                                <input id="productname" name="Tel1" type="text" class="form-control" value="@Model.Tel1">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  هاتف 2</label>
+                                <input id="productname" name="Tel2" type="text" class="form-control" value="@Model.Tel2">
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  بريد الكترونى 1</label>
+                                <input id="productname" name="Email" type="text" class="form-control" value="@Model.Email">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  بريد الكترونى 2</label>
+                                <input id="productname" name="Email1" type="text" class="form-control" value="@Model.Email1">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> عنوان</label>
+                                <input id="productname" name="Address" type="text" class="form-control" value="@Model.Address">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> الموقع الالكترونى</label>
+                                <input id="productname" name="Website" type="text" class="form-control" value="@Model.Website">
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="d-flex flex-wrap gap-2 float-end">
+
+
+                                <button type="button" onclick="Save()" class="btn btn-primary waves-effect waves-light">حفظ </button>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+@section Scripts
+{
+
+    <script>
+
+        function Save() {
+
+             let frmData = new FormData($('#frmCreate')[0]);
+
+
+            let url = '@Url.GetAction("UpdateCompany")';
+            $.ajax(getAjaxObject(url, frmData, (res) => {
+                if (res.status == 200) {
+                    swal.fire({
+                        title: "تم بنجاح",
+                        html: res.message,
+                        timer: 1000,
+                        icon: "success"
+                    });
+                  
+                }
+                else {
+                    swal.fire({
+                        title: "خطأ",
+                        html: res.message,
+                        icon: "error"
+                    });
+                }
+              
+            }));
+
+
+
+
+
+
+
+
+
+      
+    }
+
+
+
+    </script>
+
+}

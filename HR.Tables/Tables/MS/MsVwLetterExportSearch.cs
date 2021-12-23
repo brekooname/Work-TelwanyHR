@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
+namespace HR.Tables.Tables
+{
+    public partial class MsVwLetterExportSearch
+    {
+        public int ShipMentDetailId { get; set; }
+        public int? Serial { get; set; }
+        public string MotorSn { get; set; }
+        public string BodySn { get; set; }
+        public int? ShipmentTrNo { get; set; }
+        public DateTime? ShipmentTrDate { get; set; }
+        public int? ExportTrNo { get; set; }
+        public DateTime? ExportTrDate { get; set; }
+        public int? DeliverTrNo { get; set; }
+        public DateTime? DeliverTrDate { get; set; }
+        public string CustomerCode { get; set; }
+        public string CustomerDescA { get; set; }
+        public string BuyerName { get; set; }
+        public string CityName { get; set; }
+        public string Size { get; set; }
+        public string MachineName { get; set; }
+        public string MororName { get; set; }
+        public int? StoreId { get; set; }
+    }
+}

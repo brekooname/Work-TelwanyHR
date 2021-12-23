@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
+namespace HR.Tables.Tables
+{
+    public partial class VwGetBomrank
+    {
+        public long? RowRank { get; set; }
+        public int BillOfMaterialId { get; set; }
+        public string Bomcode { get; set; }
+    }
+}

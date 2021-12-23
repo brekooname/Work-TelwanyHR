@@ -1,0 +1,144 @@
+﻿
+
+
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="en" dir="rtl">
+
+
+<!-- Mirrored from themesbrand.com/skote/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 28 Jul 2021 05:02:27 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>HR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Hr" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- Bootstrap Css -->
+    <link href="/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+    <div class="account-pages my-5 pt-sm-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4 col-lg-6 col-xl-5">
+                    <div class="p-2">
+                        <div class="form-horizontal">
+
+
+                            <div class="mb-3">
+                                <label for="username" class="form-label"> الفرع</label>
+                                <select class="form-control select2" id="StoreId" asp-items="@ViewData["stores"] as SelectList" onchange="re()">
+                                </select>
+                            </div>
+
+                            @*<div class="mb-3">
+                                <label for="username" class="form-label"> فتره العمل</label>
+                                <select class="form-control select2" id="ShiftId" asp-items="@ViewData["shifts"] as SelectList" onchange="re()">
+                                </select>
+                            </div>*@
+
+                             <div class="mb-3">
+                               <button onclick="ReLoad()" class="btn btn-dark"><i class=" fa fa-sync fa-2x" ></i></button>
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8 col-lg-6 col-xl-5">
+                    <div class="card overflow-hidden">
+                        <div class="bg-primary bg-soft">
+                            <div class="row">
+
+                                <div class="col-5 align-self-end" style="width:100%">
+                                    <img alt="" id="img" class="img-fluid" style="width:100%">
+                                    <div style="text-align: center; margin: 25px;">
+                                        <span id="date"></span>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end account-pages -->
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/node-waves/waves.min.js"></script>
+
+    <!-- App js -->
+    <script src="/assets/js/app.js"></script>
+
+    <script>
+        let x = true;
+        function re() {
+            let img = document.getElementById('img');
+
+            let xmlRequest = new XMLHttpRequest();
+            let StoreId = document.querySelector('#StoreId').value;
+            //let ShiftId = document.querySelector('#ShiftId').value;
+            xmlRequest.open('get', `/home/getNewQr?StoreId=${StoreId}`);
+            xmlRequest.addEventListener('loadend', function (res) {
+                img.src = (JSON.parse(res.srcElement.response).qrCode);
+                document.getElementById("date").innerText = (JSON.parse(res.srcElement.response).date);
+            });
+            xmlRequest.send();
+
+        }
+        re();
+
+        setInterval(function () {
+            if(x)
+            re();
+        }, 15000);
+
+        setTimeout(function () {
+            x = false;
+            let img = document.getElementById('img');
+            img.src = "/Upload/Refresh_icon.png";
+        }, 55000);
+
+        function ReLoad() {
+            x = true;
+            re();
+            setTimeout(function () {
+                x = false;
+                let img = document.getElementById('img');
+                img.src = "/Upload/Refresh_icon.png";
+            }, 55000);
+        }
+
+    </script>
+</body>
+
+<!-- Mirrored from themesbrand.com/skote/layouts/auth-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 28 Jul 2021 05:02:27 GMT -->
+</html>

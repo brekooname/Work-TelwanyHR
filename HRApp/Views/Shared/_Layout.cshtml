@@ -1,0 +1,488 @@
+﻿<!doctype html>
+<html lang="en" style="direction: rtl; font-size: 14px !important;">
+
+
+<!-- Mirrored from themesbrand.com/skote/layouts/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 28 Jul 2021 05:01:36 GMT -->
+<head>
+
+    <meta charset="utf-8" />
+    <title>HR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="HR" name="description" />
+    <meta content="Themesbrand" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- Bootstrap Css -->
+    <link href="/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/css/bootstrap-rtl.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="/assets/css/app-rtl.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="/assets/libs/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+    <link href="/assets/libs/select2/css/select2.min.css" rel="stylesheet" type="text/css">
+    <style>
+        .select2-container {
+            text-align: right;
+        }
+
+        .custom-form label {
+            margin-bottom: .5rem;
+            position: absolute;
+            background-color: #fff;
+            top: -9px;
+            right: 25px;
+            padding: 0 10px;
+            font-size: 11px;
+            z-index: 20;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .list-grid {
+            overflow-y: scroll;
+            height: 380px;
+        }
+
+        label {
+            font-weight: bold !important;
+        }
+
+        .loader {
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            background: url('//upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Phi_fenomeni.gif/50px-Phi_fenomeni.gif') 50% 50% no-repeat rgb(249,249,249);
+        }
+    </style>
+</head>
+
+<body data-sidebar="dark">
+
+    <!-- <body data-layout="horizontal" data-topbar="dark"> -->
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <!-- LOGO -->
+                    <div class="navbar-brand-box">
+                        <a href="index.html" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="/Upload/78baf286-0a5b-48fa-a2b8-f02e9d175565.jpg" alt="" height="20">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/Upload/78baf286-0a5b-48fa-a2b8-f02e9d175565.jpg" alt="" height="60">
+                            </span>
+                        </a>
+
+                        <a href="index.html" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="/Upload/78baf286-0a5b-48fa-a2b8-f02e9d175565.jpg" height="20" alt="">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/Upload/78baf286-0a5b-48fa-a2b8-f02e9d175565.jpg" height="60" alt="">
+                            </span>
+                        </a>
+                    </div>
+
+                    <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+
+
+
+                </div>
+
+
+
+
+                <div class="dropdown d-inline-block">
+                    <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img class="rounded-circle header-profile-user" src="/Upload/ssss.jpg"
+                             alt="Header Avatar">
+                        <span class="d-none d-xl-inline-block ms-1" key="t-henry">
+                            @{
+                                            @inject HR.BLL.AccountBll account;
+                                            var name = account.GetUserData(int.Parse(ViewContext.HttpContext.Request.Cookies[AppConstant.Cookies.userId])); }
+                            @name
+                        </span>
+                        <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a class="dropdown-item" href="#"><i class="bx bx-user font-size-16 align-middle me-1"></i> <span key="t-profile">Profile</span></a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="/Account/Logout"><i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span key="t-logout">Logout</span></a>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </header>
+    </div>
+
+
+    <!-- ========== Left Sidebar Start ========== -->
+    <div class="vertical-menu">
+
+        <div data-simplebar class="h-100">
+
+            <!--- Sidemenu -->
+            <div id="sidebar-menu">
+                <!-- Left Menu Start -->
+                <ul class="metismenu list-unstyled" id="side-menu">
+
+
+
+                    <li class="menu-title" key="t-apps">القائمة</li>
+
+                    <li>
+                        <a href="/Home/Index" class="waves-effect">
+                            <i class="bx bx-home"></i>
+                            <span key="t-calendar">الرئيسية</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/Home/Company" class="waves-effect">
+                            <i class="bx bx-building"></i>
+                            <span key="t-calendar">معلومات الشركة</span>
+                        </a>
+                    </li>    <li>
+                        <a href="/Store/Index" class="waves-effect">
+                            <i class="bx bx-git-branch"></i>
+                            <span key="t-calendar">الفروع</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Job/Index" class="waves-effect">
+                            <i class="bx bx-filter-alt"></i>
+                            <span key="t-chat">الوظائف</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Location/Index" class="waves-effect">
+                            <i class="bx bx-map"></i>
+                            <span key="t-file-manager">المواقع</span>
+                        </a>
+                    </li>
+
+
+
+
+                    <li>
+                        <a href="/Shift/Index" class="waves-effect">
+                            <i class="bx bx-calendar"></i>
+                            <span key="t-chat">فترات العمل</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Employee/Index" class="waves-effect">
+                            <i class="bx bx-user-circle"></i>
+                            <span key="t-file-manager">الموظفين</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Employee/Users" class="waves-effect">
+                            <i class="bx bx-user-circle"></i>
+                            <span key="t-file-manager">المستخدمين</span>
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="/Employee/Report" class="waves-effect">
+                            <i class="bx bx-user-circle"></i>
+                            <span key="t-file-manager">الحضور والانصراف</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Employee/DelayReport" class="waves-effect">
+                            <i class="bx bx-money"></i>
+                            <span key="t-file-manager">تقرير الخصومات</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="/Employee/DelayReportDetails" class="waves-effect">
+                            <i class="bx bx-money"></i>
+                            <span key="t-file-manager">تقرير تفصيل الخصومات</span>
+                        </a>
+                    </li>
+
+
+
+
+
+                </ul>
+            </div>
+            <!-- Sidebar -->
+        </div>
+    </div>
+    <!-- Left Sidebar End -->
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
+
+        <div class="page-content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+            <!-- container-fluid -->
+        </div>
+
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <script>document.write(new Date().getFullYear())</script> ©.
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-sm-end d-none d-sm-block">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="loader" style="display:none"></div>
+
+    <div class="rightbar-overlay"></div>
+
+    <!-- JAVASCRIPT -->
+    <script src="/assets/libs/jquery/jquery.min.js"></script>
+    <script src="/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="/assets/libs/node-waves/waves.min.js"></script>
+
+    <!-- apexcharts -->
+    <script src="/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- dashboard init -->
+    <script src="/assets/js/pages/dashboard.init.js"></script>
+
+    <!-- App js -->
+    <script src="/assets/js/app.js"></script>
+    <script src="/assets/libs/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/assets/js/pages/sweet-alerts.init.js"></script>
+    <script src="/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <script src="/assets/libs/select2/js/select2.min.js"></script>
+    <script>
+
+        function LoadDataTableObj(url, columns, createdRow = function (row, data, dataIndex) { }, pageLength = 20, bfilter = true) {
+            var obj = {
+                bRetrieve: true,
+                "columnDefs": [{ "defaultContent": "-", "targets": "_all" }],
+                pageLength: pageLength,
+                pagijngType: "full_numbers",
+                bServerSide: true,
+                serverSide: true,
+                processing: true,
+                bFilter: bfilter,
+                lengthMenu: [10, 25, 50, 75, 100],
+                // sAjaxSource: url,
+                ajax: {
+                    url: url,
+                    type: "POST",
+                    data: function (d) {
+
+                        var token = $("input[name=AToken]");
+                        if (token.length > 0) {
+                            d["AToken"] = token.val();
+                        }
+
+                        return d;
+                    },
+                    beforeSend: function (request) {
+
+                        var token = $("input[name=AToken]");
+                        if (token.length > 0) {
+                            request.setRequestHeader("AToken", token.val());
+                        }
+
+                        return request;
+                    }
+                },
+                sServerMethod: "POST",
+                bPaginate: true,
+                paging: true,
+                dom: 'Blfrtip',
+                buttons: [],
+                columns: columns,
+                createdRow: createdRow
+            };
+            return obj;
+        }
+
+        // onKeyPress="return isNumberWithDotOnly()"
+        function isNumberWithDotOnly(evt) {
+
+
+            var element = event.target;
+            var val = element.value;
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (
+                (charCode != 45 || val.indexOf('-') != -1) &&      // Check minus and only once.
+                (charCode != 46 || val.indexOf('.') != -1) &&      // Check dot and only once.
+                (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function isNumber(evt) {
+
+
+            var element = event.target;
+            var val = element.value;
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (
+                (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function checkIfOver(max) {
+            let elem = $(event.target);
+            if (elem.val() > max) {
+
+                swal.fire({
+                    title: "خطأ",
+                    html: `لا يمكن تجاوز ${max}`,
+                    icon: "error"
+                });
+                elem.val('0');
+            }
+        }
+
+
+    </script>
+
+    <script>
+
+        function excuteResponse(res) {
+            if (res.status == 200) {
+                swal.fire({
+                    title: "تم بنجاح",
+                    html: res.message,
+                    timer: 1000,
+                    icon: "success"
+                });
+                $('#frmCreate').find(':input').val('');
+                $('#frmCreate').find('select').val('').change();
+            }
+            else {
+                swal.fire({
+                    title: "خطأ",
+                    html: res.message,
+                    icon: "error"
+                });
+            }
+        }
+
+        function funcCancel() {
+            $('#frmCreate').find(':input').removeAttr('readonly');
+            $('#frmCreate').find(':input').val('');
+            $('#frmCreate').find('select').val('').change();
+            if ($(`.edit`))
+            $(`.edit`).closest('tbody').find('tr').css('background-color', 'white');
+        }
+
+        function swalConfirmPopUp(action, title = "هل تريد الحذف ؟") {
+            Swal.fire({
+                title: title,
+                showDenyButton: true,
+                confirmButtonText: "حفظ",
+                denyButtonText: "الغاء"
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    action();
+                }
+                else {
+                    swal.close();
+                }
+            })
+        }
+
+        function lowerFirstLetter(string) {
+            return string.charAt(0).toLowerCase() + string.slice(1);
+        }
+
+        function reloadDataTable() {
+            tbl.ajax.reload(null, false);
+            $('[name="StoreCode"]').prop('readonly', false);
+            $('[name="Code"]').prop('readonly', false);
+            $('[name="Jcode"]').prop('readonly', false);
+            $('[name="ShiftCode"]').prop('readonly', false);
+
+            $('[name="EmpCode"]').prop('readonly', false);
+            $('[name="UserCode"]').prop('readonly', false);
+
+        }
+
+        function getAjaxObject(url, data, success, error = (er) => { console.log("Error") }, method = 'post') {
+            let obj = {
+                method: method,
+                url: url,
+                contentType: false,
+                processData: false,
+                data: data,
+                success: success,
+                error: error
+            };
+            return obj;
+        }
+
+        $(() => {
+            if ($('.select2')) {
+                $('.select2').select2();
+            }
+        });
+
+        $(document).ajaxStart(() => {
+            $('.loader').css('display', 'block');
+        });
+
+        $(document).ajaxStop(() => {
+            $('.loader').css('display', 'none');
+        });
+
+    </script>
+
+    @RenderSection("Scripts", false)
+</body>
+
+
+<!-- Mirrored from themesbrand.com/skote/layouts/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 28 Jul 2021 05:01:37 GMT -->
+</html>

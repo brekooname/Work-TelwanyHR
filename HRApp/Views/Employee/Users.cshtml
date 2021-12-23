@@ -1,0 +1,382 @@
+﻿
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-md-3">
+                        <h4 class="card-title">اضافة مستخدم  </h4>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-center text-center">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous" onclick="Navgate(counts, false)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="First" onclick="Navgate(1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 8px;" class="fa fa-chevron-right"></i></span>
+                                    </a>
+                                </li>
+
+                                <li class="page-item"><a class="page-link" href="" id="pageNumber"></a></li>
+
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Last" onclick="Navgate(-1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 9px;" class="fa fa-chevron-left"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next" onclick="Navgate(1, false)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="d-flex flex-wrap gap-2 float-end">
+                          
+                            <button class="btn btn-success btn-sm" type="button" onclick="funcCancel()">جديد</button>
+                            <button type="button" onclick="Save()" class="btn btn-primary waves-effect waves-light">حفظ </button>
+                            <button class="btn btn-danger btn-sm" type="button" onclick="funPublicDelete()">حذف</button>
+                        </div>
+                    </div>
+                </div>
+                <form id="frmCreate" onsubmit="return false;">
+                    <div class="row">
+                        <input type="hidden" name="UserId" />
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="manufacturername">كود المستخدم </label>
+                                <input id="manufacturername" name="UserCode" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> الاسم الاول</label>
+                                <input id="productname" name="FirstName" type="text" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> اسم العائلة</label>
+                                <input id="productname" name="LastName" type="text" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname"> اسم المستخدم</label>
+                                <input id="productname" name="UserName" type="text" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  MacAddress</label>
+                                <input id="productname" name="MacAddress" type="text" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">  نوع المستخدم</label>
+                                <select class="form-control select2" name="UserType">
+                                    <option value="" >اختر</option>
+                                    <option value="2">مدير نظام</option>
+                                    <option value="0">موظف</option>
+                                    <option value="5">موارد بشرية</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">   الموظف</label>
+                                <select class="form-control " name="EmpId">
+                                    <option value="">اختر</option>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="productname">   كلمة السر </label>
+                                <input id="productname" name="Password" type="password" class="form-control">
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="row list-grid">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">الموظفين </h4>
+
+
+                <table id="datatable" class="table ">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th> الاسم الاول</th>
+                            <th>  اسم العائلة</th>
+                            <th>  اسم المستخدم</th>
+                            <th>  نوع المستخدم</th>
+                            <th>#</th>
+
+                        </tr>
+                    </thead>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+@section Scripts
+{
+
+
+    <script>
+
+
+    function Save() {
+
+
+        let frmData = new FormData($('#frmCreate')[0]);
+
+            let url = '@Url.GetAction("AddUser")';
+            $.ajax(getAjaxObject(url, frmData, (res) => {
+                excuteResponse(res);
+                reloadDataTable();
+                if (res.status == 200) {
+                    $('[name="UserId"]').val("0");
+                }
+            }));
+    }
+
+
+        let tbl;
+        let frm = $('#frmCreate');
+    $(() => {
+        tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadUsersData")',
+                [
+
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.userCode ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.firstName ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.lastName ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.userName ?? "") + '</label>'
+                        }
+                    },   {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.userType ?? "") + '</label>'
+                        }
+                    },
+                 {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+
+                            return `  <a class="btn btn-outline-secondary btn-sm edit"  data-id='${data.id}' onclick="displayDataForEdit('${data.id}')" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                    <a class="btn btn-outline-danger btn-sm delete" onclick='funDelete("${data.id}")' title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>`;
+                        }
+                    }
+
+                ]
+            )
+        );
+        LoadEmployees();
+        $('#datatable').find('tbody').on('click', 'tr', function () {
+            let elem = $(this);
+            let id = elem.find('.edit').attr('data-id');
+
+            elem.closest('tbody').find('tr').css('background-color', 'white');
+            elem.css('background-color', '#a2a9bd');
+
+
+            displayDataForEdit(id);
+        });
+
+
+    });
+
+        function LoadEmployees(id) {
+            $.post('@Url.GetAction("GetEmployees")/'+id, {}, function (res) {
+
+                let ddlEmployee = $('[name="EmpId"]');
+                ddlEmployee.html('');
+                ddlEmployee.append(`<option value="">اختر</option>`)
+
+                $(res).each(function (i, v) {
+                    if(id==v.id)
+                        ddlEmployee.append(`<option value="${v.id}" selected="selected" >${v.name}</option>`)
+                    else
+                        ddlEmployee.append(`<option value="${v.id}">${v.name}</option>`)
+                });
+                ddlEmployee.select2();
+            })
+        }
+
+        function funDelete(id) {
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("DeleteUser")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="UserId"]').val("0");
+
+                }));
+            });
+        }
+
+       function displayDataForEdit(id) {
+
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("DisplayUserDataForEdit")';
+           $.ajax(getAjaxObject(url, frmData, (res) => {
+            //   LoadEmployees(res.empId);
+                BindData(res);
+
+            }));
+        }
+
+        function BindData(res) {
+            $('html,body').animate({ scrollTop: 0 }, 500, 'swing', function () {
+                frm.serializeArray().forEach(x => {
+
+                    if ($(`[name="${x.name}"]`).prop('type').includes('select')) {
+
+                        LoadEmployees(res.empId);
+                           // $(`[name="EmpId"]`).val(res.empId).change();
+
+                        $(`[name="UserType"]`).val(res.userType).change();
+                    }
+                    else
+                        $(`[name="${x.name}"]`).val(res[lowerFirstLetter(x.name)]);
+                });
+
+                $('[name="UserCode"]').prop('readonly', true);
+            });
+        }
+
+
+                 function funPublicDelete() {
+            event.preventDefault();
+
+                     let checkItem = $('[name="UserId"]').val();
+            if (checkItem == 0) {
+                swal.fire({
+                    title: "خطأ",
+                    html: 'اختر العنصر الذى تريد حذفة',
+                    icon: "error"
+                });
+                return;
+            }
+
+            let frmData = new FormData();
+            frmData.append('id', checkItem);
+            let url = '@Url.GetAction("Delete")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="UserId"]').val("0");
+
+
+                }));
+            });
+        }
+
+        let counts = '@(ViewData["Count"])';
+        let num = 0;
+        $(() => {
+            $('#pageNumber').html(num + "/" + counts);
+        });
+
+        function Navgate(xi, stepByStep) {
+            debugger;
+            $('#mdlSearch').modal('hide');
+
+            if (stepByStep) {
+
+                if (xi < 0 && num == 1)
+                    return;
+                else if (xi > 0 && num == counts)
+                    return;
+
+                num = parseInt(num) + parseInt(xi);
+            }
+            else
+                num = xi;
+
+            let frmData = new FormData();
+            frmData.append('index', num);
+            let url = '@Url.GetAction("GetUserItemByIndex")';
+             $.ajax(getAjaxObject(url, frmData, (res) => {
+                 $('#pageNumber').html(num + "/" + counts)
+
+                 BindData(res);
+
+                 $(`.edit`).closest('tbody').find('tr').css('background-color', 'white');
+                 $(`.edit[data-id="${res.userId}"]`).closest('tr').css('background-color', '#a2a9bd');
+            }));
+        }
+
+    </script>
+}

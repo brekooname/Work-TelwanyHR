@@ -1,0 +1,378 @@
+﻿
+
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row" style="margin-bottom: 5px;">
+                    <div class="col-md-3">
+                        <h4 class="card-title">اضافة  فترة عمل   </h4>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-center text-center">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Previous" onclick="Navgate(counts, false)">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="First" onclick="Navgate(1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 8px;" class="fa fa-chevron-right"></i></span>
+                                    </a>
+                                </li>
+
+                                <li class="page-item"><a class="page-link" href="" id="pageNumber"></a></li>
+
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Last" onclick="Navgate(-1,true)">
+                                        <span aria-hidden="true"><i style="font-size: 9px;" class="fa fa-chevron-left"></i></span>
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#" aria-label="Next" onclick="Navgate(1, false)">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <div class="d-flex flex-wrap gap-2 float-end">
+                          
+                            <button class="btn btn-success btn-sm" type="button" onclick="funcCancel()">جديد</button>
+                            <button type="button" onclick="Save()" class="btn btn-primary waves-effect waves-light">حفظ </button>
+                            <button class="btn btn-danger btn-sm" type="button" onclick="funPublicDelete()">حذف</button>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="frmCreate" onsubmit="return false;">
+                    <input type="hidden" name="ShiftId" />
+
+                    <div class="row">
+                        <input type="hidden" name="ShiftId" />
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="manufacturername">الكود </label>
+                                <input id="manufacturername" name="ShiftCode" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="manufacturername">الاسم </label>
+                                <input id="manufacturername" name="Name1" type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3 custom-form">
+                                <label for="manufacturername">الاسم انجلزى </label>
+                                <input id="manufacturername" name="Name2" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <table class="table table-responsive table-bordered">
+
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        اليوم
+                                    </th>
+                                    @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+                                    {
+                                        int index = (int)Enum.Parse(typeof(ShiftDays), item);
+                        <td>@item</td>
+}
+                                </tr>
+                                <tr>
+                                    <th>
+                                        نوع اليوم
+                                    </th>
+                                    @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+                                    {
+                                        int index = (int)Enum.Parse(typeof(ShiftDays), item);
+                        <td>
+                            <div class="form-check form-switch form-switch-md " dir="ltr">
+                                <input type="checkbox" class="form-check-input" id="Day@(index)Type">
+                                <label class="form-check-label " for="DefualtCurrency">  يوم عمل</label>
+                            </div>
+                        </td>
+}
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        من
+                                    </th>
+                                    @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+                                    {
+                                        int index = (int)Enum.Parse(typeof(ShiftDays), item);
+                        <td>
+                            <input id="productname" name="FirstShftDay@(index)From" type="time" class="form-control">
+                        </td>
+}
+                                </tr>
+
+                                <tr>
+                                    <th>
+                                        الى
+                                    </th>
+                                    @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+                                    {
+                                        int index = (int)Enum.Parse(typeof(ShiftDays), item);
+                        <td>
+                            <input id="productname" name="FirstShftDay@(index)To" type="time" class="form-control">
+                        </td>
+}
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="row list-grid">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+
+                <h4 class="card-title">فترات العمل </h4>
+
+
+                <table id="datatable" class="table ">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>الاسم</th>
+                            <th>الاسم انجلزى</th>
+                            <th>#</th>
+
+                        </tr>
+                    </thead>
+
+
+                </table>
+
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+
+@section Scripts
+{
+ 
+    <script>
+
+    function Save() {
+
+        event.preventDefault();
+        let frmData = new FormData($('#frmCreate')[0]);
+             @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+             {
+                 int index = (int)Enum.Parse(typeof(ShiftDays), item);
+
+             @: frmData.append('Day@(index)Type', $('#Day@(index)Type').prop('checked'));
+             }
+                 let url = '@Url.GetAction("Add")';
+            $.ajax(getAjaxObject(url, frmData, (res) => {
+                  excuteResponse(res);
+                  reloadDataTable();
+                  if (res.status == 200) {
+                      $('[name="ShiftId"]').val("0");
+                           @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+             {
+                 int index = (int)Enum.Parse(typeof(ShiftDays), item);
+
+             @:  $('#Day@(index)Type').prop('checked', false);
+             }
+                  }
+
+              }));
+             }
+
+
+        let tbl;
+        let frm = $('#frmCreate');
+    $(() => {
+        tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadData")',
+                [
+
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.code ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.name ?? "") + '</label>'
+                        }
+                    },  {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.nameE ?? "") + '</label>'
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+
+                            return `  <a class="btn btn-outline-secondary btn-sm edit" data-id='${data.id}' onclick="displayDataForEdit('${data.id}')" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>
+                                    <a class="btn btn-outline-danger btn-sm delete" onclick='funDelete("${data.id}")' title="Delete">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>`;
+                        }
+                    }
+
+                ]
+            )
+            );
+        $('#datatable').find('tbody').on('click', 'tr', function () {
+            let elem = $(this);
+            let id = elem.find('.edit').attr('data-id');
+
+            elem.closest('tbody').find('tr').css('background-color', 'white');
+            elem.css('background-color', '#a2a9bd');
+
+
+            displayDataForEdit(id);
+        });
+    });
+
+        function funDelete(id) {
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("Delete")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="ShiftId"]').val("0");
+
+                }));
+            });
+        }
+
+       function displayDataForEdit(id) {
+
+            event.preventDefault();
+            let frmData = new FormData();
+            frmData.append('id', id);
+            let url = '@Url.GetAction("DisplayDataForEdit")';
+            $.ajax(getAjaxObject(url, frmData, (res) => {
+                BindData(res);
+
+            }));
+        }
+
+        function BindData(res) {
+            $('html,body').animate({ scrollTop: 0 }, 500, 'swing', function () {
+                frm.serializeArray().forEach(x => {
+
+                    if ($(`[name="${x.name}"]`).prop('type').includes('select')) {
+                        $(`[name="${x.name}"]`).val(res[lowerFirstLetter(x.name)]).change();
+                    }
+                    else
+                        $(`[name="${x.name}"]`).val(res[lowerFirstLetter(x.name)]);
+
+             @foreach (string item in Enum.GetNames(typeof(ShiftDays)))
+             {
+                 int index = (int)Enum.Parse(typeof(ShiftDays), item);
+
+             @:  $('#Day@(index)Type').prop('checked', res[lowerFirstLetter('Day@(index)Type')]);
+             }
+                });
+                $('[name="ShiftCode"]').prop('readonly', true);
+            });
+        }
+
+
+           function funPublicDelete() {
+            event.preventDefault();
+
+               let checkItem = $('[name="ShiftId"]').val();
+            if (checkItem == 0) {
+                swal.fire({
+                    title: "خطأ",
+                    html: 'اختر العنصر الذى تريد حذفة',
+                    icon: "error"
+                });
+                return;
+            }
+
+            let frmData = new FormData();
+            frmData.append('id', checkItem);
+            let url = '@Url.GetAction("Delete")';
+            swalConfirmPopUp(() => {
+                $.ajax(getAjaxObject(url, frmData, (res) => {
+                    excuteResponse(res);
+                    reloadDataTable();
+                    $('[name="ShiftId"]').val("0");
+
+
+                }));
+            });
+        }
+
+        let counts = '@(ViewData["Count"])';
+        let num = 0;
+        $(() => {
+            $('#pageNumber').html(num + "/" + counts);
+        });
+
+        function Navgate(xi, stepByStep) {
+            debugger;
+            $('#mdlSearch').modal('hide');
+
+            if (stepByStep) {
+
+                if (xi < 0 && num == 1)
+                    return;
+                else if (xi > 0 && num == counts)
+                    return;
+
+                num = parseInt(num) + parseInt(xi);
+            }
+            else
+                num = xi;
+
+            let frmData = new FormData();
+            frmData.append('index', num);
+            let url = '@Url.GetAction("GetItemByIndex")';
+             $.ajax(getAjaxObject(url, frmData, (res) => {
+                 $('#pageNumber').html(num + "/" + counts)
+
+                 BindData(res);
+
+                 $(`.edit`).closest('tbody').find('tr').css('background-color', 'white');
+                 $(`.edit[data-id="${res.shiftId}"]`).closest('tr').css('background-color', '#a2a9bd');
+            }));
+        }
+
+    </script>
+}
