@@ -686,7 +686,6 @@ namespace HR.DAL
         public virtual DbSet<YearMonthes> YearMonthes { get; set; }
         public virtual DbSet<HrKPIS> HrKPIS { get; set; }
         public virtual DbSet<HrEmpKPIS> HrEmpKPIS { get; set; }
-        public virtual DbSet<AppSetting> AppSetting { get; set; }
         #endregion        
 
 
@@ -694,28 +693,30 @@ namespace HR.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HR;Trusted_Connection=True;");
+                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HR;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer
                 //   (
                 //    "Data Source=SQL5092.site4now.net,1433,1433;Initial Catalog=db_a75fc0_smarterpstandard;User Id=db_a75fc0_smarterpstandard_admin;Password=saad123allah;MultipleActiveResultSets=true"
-                //    //"Data Source=sql5108.site4now.net,1433;Initial Catalog=DB_A75FC0_TestSmartERP;User Id=DB_A75FC0_TestSmartERP_admin;Password=saad123allah;MultipleActiveResultSets=true;Persist Security Info=true;"
-                //    ,
-                //    sqlServerOptions => sqlServerOptions.CommandTimeout(120));
+                //    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
 
+                optionsBuilder.UseSqlServer
+                   (
+                    "Data Source=SQL5109.site4now.net;Initial Catalog=db_a44da5_hr2;User Id=db_a44da5_hr2_admin;Password=A271185b;MultipleActiveResultSets=true"
+                    ,sqlServerOptions => sqlServerOptions.CommandTimeout(120));
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AppSetting>(entity =>
-            {
-                entity.HasKey(e => e.Id);
+            //modelBuilder.Entity<AppSetting>(entity =>
+            //{
+            //    entity.HasKey(e => e.Id);
 
-                entity.ToTable("AppSetting");
+            //    entity.ToTable("AppSetting");
 
-                entity.Property(e => e.ProductKey).HasMaxLength(int.MaxValue);
-                entity.Property(e => e.Url).HasMaxLength(int.MaxValue);
-            });
+            //    entity.Property(e => e.ProductKey).HasMaxLength(int.MaxValue);
+            //    entity.Property(e => e.Url).HasMaxLength(int.MaxValue);
+            //});
 
             modelBuilder.Entity<AssetAssetAddDoc>(entity =>
             {
