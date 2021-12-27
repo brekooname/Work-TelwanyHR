@@ -4,14 +4,16 @@ using HR.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HR.DAL.Migrations
 {
     [DbContext(typeof(SmartERPStandardContext))]
-    partial class SmartERPStandardContextModelSnapshot : ModelSnapshot
+    [Migration("20211226135846_remove AppSetting")]
+    partial class removeAppSetting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

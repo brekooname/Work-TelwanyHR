@@ -11,7 +11,6 @@ namespace HR.BLL
     public class AppSettingBll
     {
         private readonly IRepository<AppSetting> Service;
-
         public AppSettingBll(IRepository<AppSetting> service)
         {
             Service = service;
@@ -22,10 +21,12 @@ namespace HR.BLL
             try
             {
                 AppSetting app = Service.Find(x => x.ProductKey == productKey).FirstOrDefault();
+
                 return new
                 {
                     Status = 200,
-                    message = langKey == "ar" ? "لا توجد بيانات لهذه البيانات" : "There is no data for this data",
+                    message = app == null ? (langKey == "ar" ? "لا توجد بيانات لهذه البيانات" : "There is no data for this data") 
+                    : langKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully",
                     Url = app?.Url
                 };
             }
@@ -35,6 +36,7 @@ namespace HR.BLL
                 {
                     Status = 500,
                     message = langKey == "ar" ? "حدث خطأ ما اعد المحاولة" : "An error has occurred",
+                    Url="",
                 };
             }
         }
