@@ -693,16 +693,22 @@ namespace HR.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HR;Trusted_Connection=True;");
+                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer
                 //   (
                 //    "Data Source=SQL5092.site4now.net,1433,1433;Initial Catalog=db_a75fc0_smarterpstandard;User Id=db_a75fc0_smarterpstandard_admin;Password=saad123allah;MultipleActiveResultSets=true"
                 //    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
 
+                //optionsBuilder.UseSqlServer
+                //   (
+                //    "Data Source=SQL5109.site4now.net;Initial Catalog=db_a44da5_hr2;User Id=db_a44da5_hr2_admin;Password=A271185b;MultipleActiveResultSets=true"
+                //    ,sqlServerOptions => sqlServerOptions.CommandTimeout(120));
+
+                /// hr for Ihab //////////////
                 optionsBuilder.UseSqlServer
                    (
-                    "Data Source=SQL5109.site4now.net;Initial Catalog=db_a44da5_hr2;User Id=db_a44da5_hr2_admin;Password=A271185b;MultipleActiveResultSets=true"
-                    ,sqlServerOptions => sqlServerOptions.CommandTimeout(120));
+                    "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_hrforihab;User Id=db_a44da5_hrforihab_admin;Password=A271185b;MultipleActiveResultSets=true"
+                    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
             }
         }
 

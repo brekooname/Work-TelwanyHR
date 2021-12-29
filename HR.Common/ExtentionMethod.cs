@@ -221,8 +221,8 @@ namespace HR
             var date = DateTime.UtcNow.AddHours(3);
             var dateString = date.Year + "" + date.Month + "" + date.Day + "" +
                 (date.Millisecond.ToString().Length == 3 ? date.Millisecond.ToString().Substring(0, 2) : date.Millisecond + "");
-
-            return dateString + (new Random()).Next(1, 1000);
+            string res= dateString + (new Random()).Next(1, 1000); 
+            return res;
         }
 
 

@@ -40,7 +40,8 @@ namespace HRApp.Areas.Api
         {
             string conLocal = "Data Source=DESKTOP-S02Q4PR\\SQL2014;Initial Catalog=AppUrl;User Id=softgo;Password=A271185b;MultipleActiveResultSets=true",
                 conOnline = "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_apphrurl;User Id=db_a44da5_apphrurl_admin;Password=A271185b; MultipleActiveResultSets = true",
-                sql = "select * from AppSetting where AppSetting.ProductKey = '"+ productKey + "'";
+                sql = "select * from AppSetting where AppSetting.ProductKey = '" + productKey + "'",
+                message = LangKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully";
 
             BaseDataAccess dataAccess = new BaseDataAccess(conOnline);
             var connection = dataAccess.GetConnection();
@@ -51,13 +52,13 @@ namespace HRApp.Areas.Api
                 {
                     sql = "select * from AppSetting where AppSetting.IsDefault = " + 1 + "";
                     app = dataAccess.GetResult(sql, connection);
+                    message = LangKey == "ar" ? "لم يتم العثور على بيانات وتم ارجاع اللينك الاساسي" : "No data was found and the original link was returned";
                 }
 
                 return new
                 {
                     Status = 200,
-                    message = app == null ? (LangKey == "ar" ? "لا توجد بيانات لهذه البيانات" : "There is no data for this data")
-                    : LangKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully",
+                    message = message,
                     Url = app?.Url
                 };
             }

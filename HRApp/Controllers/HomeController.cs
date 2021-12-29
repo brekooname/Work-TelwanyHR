@@ -46,22 +46,22 @@ namespace HRApp.Controllers
         [Authorize]
         public IActionResult Company()
         {
-
             MsCompany compay = _repCompany.GetAll().FirstOrDefault();
             if (compay==null)
             {
-                compay = new MsCompany {CompNameA="شركة ",CompNameE="Company",Code=int.Parse( "".UniqueNumber()) };
+                long code = long.Parse("".UniqueNumber());
+                compay = new MsCompany {CompNameA="شركة ",CompNameE="Company",Code= code };
                 _repCompany.Insert(compay);
-                _settingBLL.UpdateCompanyBaseData(long.Parse("".UniqueNumber()), "", "", "شركة");
+                _settingBLL.UpdateCompanyBaseData(code, "", "", "شركة");
             }
             return View(compay);
         }
 
         public IActionResult UpdateCompany(MsCompany msCompany)
         {
-
-
             var entity = _repCompany.GetById(msCompany.CompanyId);
+            long code = entity.Code.Value;
+
             if (entity != null)
             {
                 var file = HttpContext.Request.Form.Files;
@@ -86,11 +86,12 @@ namespace HRApp.Controllers
                 entity.Email1 = msCompany.Email1;
                 entity.Address = msCompany.Address;
                 entity.Website = msCompany.Website;
+                entity.LogoUrl = msCompany.LogoUrl;
             
 
 
                 var action = _repCompany.Update(entity);
-                _settingBLL.UpdateCompanyBaseData(entity.Code.Value, entity.LogoUrl, "", entity.CompNameA);
+                _settingBLL.UpdateCompanyBaseData(code, entity.LogoUrl, "", entity.CompNameA);
                 return Json(new
                 {
                     Status = action ? 200 : 500,
