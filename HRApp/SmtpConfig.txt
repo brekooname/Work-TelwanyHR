@@ -1,0 +1,5 @@
+﻿Data Source=DESKTOP-S02Q4PR\SQL2014;
+Initial Catalog=HREmpty;
+User Id=softgo;
+Password=A271185b;
+MultipleActiveResultSets=true

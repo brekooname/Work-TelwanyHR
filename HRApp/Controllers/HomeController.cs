@@ -52,7 +52,7 @@ namespace HRApp.Controllers
                 long code = long.Parse("".UniqueNumber());
                 compay = new MsCompany {CompNameA="شركة ",CompNameE="Company",Code= code };
                 _repCompany.Insert(compay);
-                _settingBLL.UpdateCompanyBaseData(code, "", "", "شركة");
+                //_settingBLL.UpdateCompanyBaseData(code, "", "", "شركة");
             }
             return View(compay);
         }
@@ -88,10 +88,8 @@ namespace HRApp.Controllers
                 entity.Website = msCompany.Website;
                 entity.LogoUrl = msCompany.LogoUrl;
             
-
-
                 var action = _repCompany.Update(entity);
-                _settingBLL.UpdateCompanyBaseData(code, entity.LogoUrl, "", entity.CompNameA);
+                //_settingBLL.UpdateCompanyBaseData(code, entity.LogoUrl, "", entity.CompNameA);
                 return Json(new
                 {
                     Status = action ? 200 : 500,

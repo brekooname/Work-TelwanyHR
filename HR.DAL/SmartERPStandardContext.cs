@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using HR.Tables.Tables;
 using HR.Tables.Tables.HR;
+using HR.DAL.Smtp;
 
 namespace HR.DAL
 {
@@ -693,6 +694,8 @@ namespace HR.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
+                optionsBuilder.UseSqlServer(SmtpConfig.GrtConnectionString());
+                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer
                 //   (
@@ -705,10 +708,10 @@ namespace HR.DAL
                 //    ,sqlServerOptions => sqlServerOptions.CommandTimeout(120));
 
                 /// hr for Ihab //////////////
-                optionsBuilder.UseSqlServer
-                   (
-                    "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_hrforihab;User Id=db_a44da5_hrforihab_admin;Password=A271185b;MultipleActiveResultSets=true"
-                    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
+                //optionsBuilder.UseSqlServer
+                //   (
+                //    "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_hrforihab;User Id=db_a44da5_hrforihab_admin;Password=A271185b;MultipleActiveResultSets=true"
+                //    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
             }
         }
 

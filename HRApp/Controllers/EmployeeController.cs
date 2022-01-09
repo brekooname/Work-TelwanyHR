@@ -39,6 +39,7 @@ namespace HRApp.Controllers
             _reportsBLL = reportsBLL;
             _webHostEnvironment = webHostEnvironment;
         }
+        
         public IActionResult Index()
         {
             ViewData["Count"] = _EmployeeBll.GetCount();
@@ -50,12 +51,10 @@ namespace HRApp.Controllers
 
             return View();
         }
-
         public IActionResult Report()
         {
             return View();
         }
-
         public IActionResult DelayReport()
         {
             return View();
@@ -70,10 +69,8 @@ namespace HRApp.Controllers
 
             return View();
         }
-
         public JsonResult GetEmployees(int ?id)
             => Json(_EmployeeBll.getEmployeesNotHaveUser(id));
-
         public JsonResult Add(HrEmployees mdl)
         {
             var file = HttpContext.Request.Form.Files;
@@ -122,7 +119,6 @@ namespace HRApp.Controllers
         {
             return Json(_EmployeeBll.LoadUsersData(mdl));
         }
-
         public JsonResult LoadAttendanceData(DataTableDTO mdl)
         {
             return Json(_AccountBll.LoadAttendanceData(mdl));
@@ -135,12 +131,9 @@ namespace HRApp.Controllers
         {
             return Json(_reportsBLL.LoadDelayDetailsReport(mdl));
         }
-
         public JsonResult GetItemByIndex(int index)
 => Json(_EmployeeBll.GetItemByIndex(index));  
-        
         public JsonResult GetUserItemByIndex(int index)
 => Json(_EmployeeBll.GetUserItemByIndex(index));
-
     }
 }

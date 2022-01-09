@@ -1,11 +1,13 @@
+using System;
+using System.IO;
 using System.Text;
-
 using HR.BLL;
 using HR.DAL;
-
+using HR.DAL.Smtp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -26,6 +28,9 @@ namespace HRApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<SmartERPStandardContext>(options => options.UseSqlServer(SmtpConfig.GrtConnectionString()));
+            //Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure<SmtpConfig>(services, Configuration.GetSection("ConnectionString"));
+           
             services.AddControllers();
             services.AddMvc();
             services.AddControllersWithViews();
@@ -59,10 +64,10 @@ namespace HRApp
 
             services.AddControllersWithViews().AddNewtonsoftJson(op => 
             { op.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; });
-
             services.AddHttpContextAccessor();
 
-            services.AddDbContext<SmartERPStandardContext>();
+            //services.AddDbContext<SmartERPStandardContext>();
+
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(EmployeeBll));
