@@ -48,7 +48,8 @@ namespace HR.BLL
         public object getEmployeesNotHaveUser(int ?id=null)
         {
             var users = _repUsers.GetAll();
-            return _rep.GetAll().Where(x=>!users.Any(y=>y.EmpId==x.EmpId)||(id.HasValue&&x.EmpId==id.Value)).Select(x => new {Id= x.EmpId, Name=x.Name1 }).ToList();
+            var res  = _rep.GetAll().Where(x => !users.Any(y => y.EmpId == x.EmpId) || (id.HasValue && x.EmpId == id.Value)).Select(x => new { Id = x.EmpId, Name = x.Name1 }).ToList();
+            return res;
         }
 
         public object GetEmployeeOrders(int EmployeeId, string LanguageKey, int pageIndex = 1, bool total = false)

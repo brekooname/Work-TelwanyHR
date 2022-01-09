@@ -1,5 +1,5 @@
-﻿Data Source=DESKTOP-S02Q4PR\SQL2014;
-Initial Catalog=HREmpty;
-User Id=softgo;
+﻿Data Source=SQL5109.site4now.net;
+Initial Catalog=db_a44da5_hr2;
+User Id=db_a44da5_hr2_admin;
 Password=A271185b;
 MultipleActiveResultSets=true
