@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using HR.Tables.Tables;
 using HR.Tables.Tables.HR;
+using HR.DAL.Smtp;
 
 namespace HR.DAL
 {
@@ -690,8 +691,9 @@ namespace HR.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-7PM4VJC\\SQLEXPRESS;Database=HR;Trusted_Connection=True;");
-
+                optionsBuilder.UseSqlServer(SmtpConfig.GrtConnectionString());
+                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
+                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer
                 //   (
                 //    "Data Source=SQL5092.site4now.net,1433,1433;Initial Catalog=db_a75fc0_smarterpstandard;User Id=db_a75fc0_smarterpstandard_admin;Password=saad123allah;MultipleActiveResultSets=true"
