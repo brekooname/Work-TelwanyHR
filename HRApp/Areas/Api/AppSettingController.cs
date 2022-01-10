@@ -38,7 +38,7 @@ namespace HRApp.Areas.Api
 
         public object Find(string productKey, string LangKey = "ar")
         {
-            string conLocal = "Data Source=DESKTOP-S02Q4PR\\SQL2014;Initial Catalog=AppUrl;User Id=softgo;Password=A271185b;MultipleActiveResultSets=true",
+            string conLocal = "Data Source=.;Initial Catalog=AppHrUrl;User Id=sa;Password=A271185b;MultipleActiveResultSets=true",
                 conOnline = "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_apphrurl;User Id=db_a44da5_apphrurl_admin;Password=A271185b; MultipleActiveResultSets = true",
                 sql = "select * from AppSetting where AppSetting.ProductKey = '" + productKey + "'",
                 message = LangKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully";

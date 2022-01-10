@@ -145,7 +145,8 @@ con.Open();
                 else if  (user.UserType != 0)
                 {
                     userType = user.UserType.Value;
-                    return _jwtAuthentication.Authenticate(user.UserId + "");
+                    return _jwtAuthentication.Authenticate(user.EmpId.Value + "");
+                    //return _jwtAuthentication.Authenticate(user.UserId + "");
                 }
             }
             return "";
@@ -242,17 +243,17 @@ con.Open();
             };
         }
 
-        public object GetDashboardData(int userId, string langKey)
+        public object GetDashboardData(int EmpId, string langKey)
         {
             //var employee2 = _employeeBll.GetById(userId);
-            var user = _repUser.GetById(userId);
-            if (user == null)
-                return null;
+            //var user = _repUser.GetById(userId);
+            //if (user == null)
+            //    return null;
 
-            if (user.EmpId == null)
-                return null;
+            //if (user.EmpId == null)
+            //    return null;
 
-            int EmpId = user.EmpId.Value;
+            //int EmpId = user.EmpId.Value;
 
             var employee = _employeeBll.GetById(EmpId);
             if (employee == null)
@@ -502,9 +503,21 @@ con.Open();
         }
 
 
+        private int GetEmployeeId(int userId)
+        {
+            var user = _repUser.GetById(userId);
+            if (user == null)
+                return 0;
+
+            if (user.EmpId == null)
+                return 0;
+
+            int EmpId = user.EmpId.Value;
+
+            return user.EmpId.Value;
+        }
 
 
-    
 
     }
     /// <summary>
