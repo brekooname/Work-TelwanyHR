@@ -242,8 +242,18 @@ con.Open();
             };
         }
 
-        public object GetDashboardData(int EmpId, string langKey)
+        public object GetDashboardData(int userId, string langKey)
         {
+            //var employee2 = _employeeBll.GetById(userId);
+            var user = _repUser.GetById(userId);
+            if (user == null)
+                return null;
+
+            if (user.EmpId == null)
+                return null;
+
+            int EmpId = user.EmpId.Value;
+
             var employee = _employeeBll.GetById(EmpId);
             if (employee == null)
                 return null;
