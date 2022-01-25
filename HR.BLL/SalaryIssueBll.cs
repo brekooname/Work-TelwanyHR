@@ -52,8 +52,6 @@ namespace HR.BLL
 
         public object GetFinancialReceivableDetails(int EmployeeId, int SalaryIssuDocId, string langKey)
         {
-
-
             var data = _repSalaryIssueDoc.ExecuteStoredProcedure<FinancialReceivableDetailDTO>("[dbo].[Hr_GetFinancialReceivableDetails]", new Microsoft.Data.SqlClient.SqlParameter[]
             {
                 new Microsoft.Data.SqlClient.SqlParameter{Value=EmployeeId,ParameterName="@EmplyeeID"},
@@ -61,13 +59,12 @@ namespace HR.BLL
                 new Microsoft.Data.SqlClient.SqlParameter{Value=SalaryIssuDocId,ParameterName="@SalaryIssuDocId"}
             });
 
-
-
             var _AddValues = data.Where(x => x.AddValue != null).Select(x => new
             {
                 Value = Math.Round(x.AddValue ?? 0, 2),
                 SalaryTypeName = x.SalaryTypeName
             });
+
             var _DeductValues = data.Where(x => x.DeductValue != null).Select(x => new
             {
                 Value = Math.Round(x.DeductValue ?? 0, 2),
@@ -85,11 +82,10 @@ namespace HR.BLL
                 AddValues = _AddValues,
                 TotalOfAddValues = _AddValues.Sum(x => x.Value),
                 DeductValues = _DeductValues,
-                TotalOfDeductValues = _DeductValues.Sum(x => x.Value)
-                ,
+                TotalOfDeductValues = _DeductValues.Sum(x => x.Value),
                 OtherValue = _OtherValue,
                 TotalOfOtherValue = _OtherValue.Sum(x => x.Value),
-                NetValue = Math.Round(data.FirstOrDefault().NetValue ?? 0, 2)
+                NetValue = Math.Round(data.FirstOrDefault()?.NetValue ?? 0, 2)
             };
         }
     }

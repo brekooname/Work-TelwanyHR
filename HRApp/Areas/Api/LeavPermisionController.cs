@@ -26,17 +26,15 @@ namespace HRApp.Areas.Api
         }
 
         [HttpPost]
-        public object Request([FromForm] LeavPermisionDTO mdl,[FromQuery] string langKey)
+        public object Request([FromForm] LeavPermisionDTO mdl, [FromQuery] string langKey)
         {
-
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
 
-
-            var files = HttpContext.Request.Form.Files;
             string fileUrl = "";
             try
             {
+                var files = HttpContext.Request.Form.Files;
                 if (files != null && files.Count > 0)
                 {
                     var file = files[0];
@@ -50,11 +48,8 @@ namespace HRApp.Areas.Api
                     }
                 }
             }
-            catch 
-            {
+            catch {; }
 
-                ;
-            }
             mdl.ImageUrl = fileUrl;
 
             mdl.EmployeeId = int.Parse(userId);
@@ -62,18 +57,18 @@ namespace HRApp.Areas.Api
 
             return result;
 
-        }   
-        
+        }
+
         [HttpPost]
-        public object UpdateRequest([FromForm] EditLeavPermisionDTO mdl,[FromQuery] string langKey)
+        public object UpdateRequest([FromForm] EditLeavPermisionDTO mdl, [FromQuery] string langKey)
         {
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
 
-            var files = HttpContext.Request.Form.Files;
             string fileUrl = "";
             try
             {
+                var files = HttpContext?.Request?.Form?.Files;
                 if (files != null && files.Count > 0)
                 {
                     var file = files[0];
@@ -87,9 +82,8 @@ namespace HRApp.Areas.Api
                     }
                 }
             }
-            catch 
+            catch (Exception ex)
             {
-
                 ;
             }
             mdl.ImageUrl = fileUrl;
@@ -98,9 +92,8 @@ namespace HRApp.Areas.Api
             var result = _leavPermisionBll.Update(mdl, langKey);
 
             return result;
+        }
 
-        }  
-        
         public object GetLeavePremisionById(int leavePremisionId)
         {
             var userId = HttpContext.User?.Identity?.Name;

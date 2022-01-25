@@ -32,10 +32,10 @@ namespace HRApp.Areas.Api
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
 
-            var files = HttpContext.Request.Form.Files;
             string fileUrl = "";
             try
             {
+                var files = HttpContext.Request.Form.Files;
                 if (files != null && files.Count > 0)
                 {
                     var file = files[0];
@@ -49,11 +49,7 @@ namespace HRApp.Areas.Api
                     }
                 }
             }
-            catch 
-            {
-
-                ;
-            }
+            catch {; }
             mdl.ImageUrl = fileUrl;
 
             mdl.EmployeeId = int.Parse(userId);
@@ -69,10 +65,10 @@ namespace HRApp.Areas.Api
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
 
-            var files = HttpContext.Request.Form.Files;
             string fileUrl = "";
             try
             {
+                var files = HttpContext.Request.Form.Files;
                 if (files != null && files.Count > 0)
                 {
                     var file = files[0];
@@ -105,6 +101,8 @@ namespace HRApp.Areas.Api
             if (userId.IsEmpty()) return Unauthorized();
 
             var result = _vacationBll.GetVacationRequestById(int.Parse(userId), vacationId);
+
+            //string path = _webHostEnvironment.WebRootPath + "/Upload/" + () result;
 
             return result;
 

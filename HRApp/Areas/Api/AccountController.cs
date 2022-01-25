@@ -59,15 +59,11 @@ namespace HRApp.Areas.Api
             return _accountBll.Companies();
         }
 
- 
-
         [HttpGet, AllowAnonymous]
         public object CompanyData(long CompanyId)
         {
             return _accountBll.CompanyData(CompanyId);
         }
-
- 
 
         [HttpPost]
         public object GetProfileData(string langKey = "ar")
@@ -95,7 +91,6 @@ namespace HRApp.Areas.Api
         [HttpPost]
         public object ScanQRIn([FromBody] Point point, [FromQuery] string langKey = "ar")
         {
-            
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,true);
@@ -105,18 +100,15 @@ namespace HRApp.Areas.Api
         [HttpPost]
         public object ScanQROut([FromBody] Point point, [FromQuery] string langKey = "ar")
         {
-
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,false);
             return result;
         }
 
-
         [HttpPost]
         public object ScanQRAsString(string point, [FromQuery] string langKey = "ar")
         {
-
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey);
@@ -126,26 +118,20 @@ namespace HRApp.Areas.Api
         [HttpPost]
         public object CheckFingerprintIn([FromBody] Point point, [FromQuery] string langKey = "ar")
         {
-
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,true,false);
             return result;
         }
+
         [HttpPost]
         public object CheckFingerprintOut([FromBody] Point point, [FromQuery] string langKey = "ar")
         {
-
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,false,false);
             return result;
         }
-
-
-
-
-
 
         [HttpPost]
         public object Messages(int pageIndex = 1)
@@ -156,7 +142,5 @@ namespace HRApp.Areas.Api
             var result = _employeeBll.GetMessages(int.Parse(userId), pageIndex);
             return result;
         }
-
-
     }
 }

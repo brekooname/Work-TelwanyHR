@@ -289,8 +289,6 @@ con.Open();
 
         public object CheckQR(Point location, int EmpId, string langKey,bool In,bool shift=true)
         {
-
-
             int ? store = null;
             int ? shiftId = null;
             var dateNow = DateTime.UtcNow.AddHours(3);
@@ -299,7 +297,6 @@ con.Open();
             Location StoreLocation = new Location();
             if (shift)
             {
-
                 Dictionary<string, string> Dic = new Dictionary<string, string>();
                 var keys = location.Qr.Split('&').SelectMany(x => x.Split("=")).ToArray();
                 for (int i = 2; i <= keys.Length; i += 2)
@@ -340,10 +337,8 @@ con.Open();
                     return new
                     {
                         Status = 500,
-                        message =
-                   (langKey == "ar" ? "هذا الموظف غير مرتبط  بهذة الفترة" : "This employee is not related to this period ")
+                        message = (langKey == "ar" ? "هذا الموظف غير مرتبط  بهذة الفترة" : "This employee is not related to this period ")
                     };
-
 
                 if (In)
                 {
@@ -354,23 +349,16 @@ con.Open();
                     shiftId = employeeShifts.OrderBy(x => x.EndTime).FirstOrDefault().ShiftId;
                 }
 
-
-
-                var checkIfAttend=  _repMobile_Attendance.GetAll().Include(x=>x.HrEmployees).ThenInclude(x=>x.HrEmpShifts).ThenInclude(x=>x.HrShifts)
-                    .Where(x => x.Emp_Id == EmpId && x.StoreId == store&&x.ShftId== shiftId && x.TrDate.Value.Date==now&&x.In==In&&(!x.Status.HasValue||x.Status.Value));
+                var checkIfAttend = _repMobile_Attendance.GetAll().Include(x => x.HrEmployees).ThenInclude(x => x.HrEmpShifts).ThenInclude(x => x.HrShifts)
+                    .Where(x => x.Emp_Id == EmpId && x.StoreId == store && x.ShftId == shiftId && x.TrDate.Value.Date == now && x.In == In && (!x.Status.HasValue || x.Status.Value));
 
                 if (checkIfAttend.Any())
                 {
-
                     return new
                     {
                         Status = 500,
-                        message =
-                 (langKey == "ar" ? $" تم تأكيد  {(In ? "الحضور" : "الانصراف")}  مسبقأ  "
-             : $"{(In ? "Attendance" : "Leave")} has already been confirmed")
+                        message = (langKey == "ar" ? $" تم تأكيد  {(In ? "الحضور" : "الانصراف")}  مسبقأ  " : $"{(In ? "Attendance" : "Leave")} has already been confirmed")
                     };
-
-
                 }
 
                 var EmpStore = _repHrEmpStore.GetAll().Where(x => x.EmpId == EmpId && x.StoreId == store).Include(x => x.Stores);
@@ -430,10 +418,8 @@ con.Open();
                 }).FirstOrDefault();
             }
 
-            
-                double distance =
-                    CalculateDistanceBetweenTwoPoints(location, new Point
-                    { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
+            double distance = CalculateDistanceBetweenTwoPoints(location, new Point
+            { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
 
             var ch = distance >= 0 && distance <= 500;
 
@@ -455,8 +441,9 @@ con.Open();
             {
                 Status = 200,
                 message = ch ?
-                (langKey == "ar" ?(In? "تم  تأكيد الحضور بنجاح":"تم تأكيد الانصراف بنجاح") : (In ? "Attendance has been confirmed successfully": "Leave has been confirmed successfully"))
-
+                (langKey == "ar" ?
+                (In ? "تم  تأكيد الحضور بنجاح" : "تم تأكيد الانصراف بنجاح")
+                : (In ? "Attendance has been confirmed successfully" : "Leave has been confirmed successfully"))
              : (langKey == "ar" ? $"  تبعد عن الفرع مسافة كبيرة ولا يمكن تأكيد  {(In ? "الحضور" : "الانصراف")}"
              : $"It is a long distance from the branch and {(In ? "attendance" : "leave")}  cannot be confirmed")
             };

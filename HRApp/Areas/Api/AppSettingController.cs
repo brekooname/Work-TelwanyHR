@@ -24,17 +24,26 @@ namespace HRApp.Areas.Api
             Service = service;
         }
 
-        //public object Find(string productKey, string LangKey="ar")
-        //{
-        //    var result = Service.Find(productKey, LangKey);
-        //    return result;
-        //}
+        public object Activision(bool isActive)
+        {
+            try
+            {
+                return new
+                {
+                    Status = 200,
+                    IsActive = isActive
+                };
+            }
+            catch
+            {
 
-        //public object Find(string productKey, string LangKey = "ar")
-        //{
-        //    var result = Service.Find(productKey, LangKey);
-        //    return result;
-        //}
+                return new
+                {
+                    Status = 500,
+                    IsActive = isActive
+                };
+            }
+        }
 
         public object Find(string productKey, string LangKey = "ar")
         {

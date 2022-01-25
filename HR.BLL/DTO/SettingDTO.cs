@@ -10,6 +10,6 @@ namespace HR.BLL.DTO
         public int DefVacReqBookId { get; set; }
         public int DefLoanReqBookId { get; set; }
         public int TermId { get; set; }
-        public int FinancialIntervalsId { get; set; }
+        public int? FinancialIntervalsId { get; set; }
     }
 }

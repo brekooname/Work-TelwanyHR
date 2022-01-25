@@ -25,7 +25,7 @@ namespace HR.BLL
 
         public SettingDTO GetDefaultSetting()
         {
-            var s = _repHrMobileSetting.GetAll().Select(x => new SettingDTO
+            var setting = _repHrMobileSetting.GetAll().Select(x => new SettingDTO
             {
                 DefLoanReqBookId = x.DefLoanReqBookId,
                 DefPermReqBookId = x.DefPermReqBookId,
@@ -33,9 +33,11 @@ namespace HR.BLL
                 TermId = x.TermId
             }).FirstOrDefault();
 
-            s.FinancialIntervalsId = _repSysFinancialIntervals.Find(x => x.StartingFrom <= DateTime.Now.Date && x.EndingDate >= DateTime.Now.Date)
-                .FirstOrDefault().FinancialIntervalsId;
-            return s;
+            var repSysFinancialInterval = _repSysFinancialIntervals.Find(x => x.StartingFrom <= DateTime.Now.Date && x.EndingDate >= DateTime.Now.Date)
+                .FirstOrDefault();
+
+            setting.FinancialIntervalsId = repSysFinancialInterval?.FinancialIntervalsId; 
+            return setting;
         }
 
         //public void UpdateCompanyBaseData(long CompanyId, string ImageUrl, string BaseUrl, string CompanyName)

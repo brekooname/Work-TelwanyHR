@@ -31,6 +31,7 @@ namespace HR.BLL
             int CurrentTrNo = 1;
             if (requests.Any())
                 CurrentTrNo = requests.Max(x => x.TrNo) + 1;
+
             bool action = _repLeavPermision.Insert(new HrLeavPermissionRequest
             {
                 EmpId = mdl.EmployeeId,
@@ -96,9 +97,7 @@ namespace HR.BLL
 
         public object GetLeavePremisionById(int userId, int id)
         {
-            return _repLeavPermision.GetAll().Where(x => x.LeavPermReqId == id).
-                ToList().
-                Select(x => new
+            return _repLeavPermision.GetAll().Where(x => x.LeavPermReqId == id).ToList().Select(x => new
                 {
                     id = x.LeavPermReqId,
                     FromDate = x.FromDate.Value.ToString("MM-dd-yyyy"),
