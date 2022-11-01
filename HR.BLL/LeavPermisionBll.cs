@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
+using HR.Static;
 using HR.BLL.DTO;
 using HR.DAL;
 using HR.Tables.Tables;
@@ -41,10 +41,10 @@ namespace HR.BLL
                 FromTime = mdl.Date + mdl.FromTime,
                 ToTime = mdl.Date + mdl.ToTime,
                 HoursCount = (mdl.ToTime - mdl.FromTime).Hours,
-                TrDate = DateTime.UtcNow.AddHours(3),
+                TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                 DayCount = 1,
                 Remarks1 = mdl.Note,
-                CreatedAt = DateTime.UtcNow.AddHours(3),
+                CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours),
                 CreatedBy = mdl.EmployeeId.ToString(),
                 RequestImageUrl=mdl.ImageUrl,
                 BookId= setting.DefPermReqBookId,
@@ -78,7 +78,7 @@ namespace HR.BLL
             entity.ToTime = mdl.Date + mdl.ToTime;
             entity.HoursCount = (mdl.ToTime - mdl.FromTime).Hours;
             entity.Remarks1 = mdl.Note;
-            entity.UpdateAt = DateTime.UtcNow.AddHours(3);
+            entity.UpdateAt = DateTime.UtcNow.AddHours(HourServer.hours);
             entity.UpdateBy = mdl.EmployeeId.ToString();
             if (mdl.ImageUrl!="")
             {
@@ -123,7 +123,7 @@ namespace HR.BLL
             if (!accept)
             {
                 entity.IsPosted = true;
-                entity.PostedDate = DateTime.UtcNow.AddHours(3);
+                entity.PostedDate = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.Postedby = userId + "";
                 bool action = _repLeavPermision.Update(entity);
                 return new
@@ -155,10 +155,10 @@ namespace HR.BLL
                     FromTime =  entity.FromTime,
                     ToTime =  entity.ToTime,
                     HoursCount = entity.HoursCount,
-                    TrDate = DateTime.UtcNow.AddHours(3),
+                    TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                     DayCount = 1,
                     Remarks1 = entity.Remarks1,
-                    CreatedAt = DateTime.UtcNow.AddHours(3),
+                    CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours),
                     CreatedBy = entity.EmpId+""
                 });
                 return new

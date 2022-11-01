@@ -7,7 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
+using HR.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -30,7 +30,7 @@ namespace HR.Common
         {
             responseCookies.Append(key, value, new CookieOptions()
             {
-                Expires = DateTime.UtcNow.AddHours(3).AddYears(5),
+                Expires = DateTime.UtcNow.AddHours(HourServer.hours).AddYears(5),
                 HttpOnly = true,
                 Path = "/",
                 //TODO please un comment the next line if y will use HTTPS

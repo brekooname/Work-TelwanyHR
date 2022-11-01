@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
+using HR.Static;
 using HR.BLL.DTO;
+using HR.Common;
 using HR.DAL;
 using HR.Tables.Tables;
 
@@ -20,8 +21,7 @@ namespace HR.BLL
         private IRepository<HrVacationDoc> _repHrVacationDoc;
         SettingBLL _settingBLL;
 
-        public VacationBll(IRepository<HrVacationRequest> repHrVacationRequest,
-            IRepository<HrVacationDoc> repHrVacationDoc, SettingBLL settingBLL)
+        public VacationBll(IRepository<HrVacationRequest> repHrVacationRequest, IRepository<HrVacationDoc> repHrVacationDoc, SettingBLL settingBLL)
         {
             _repHrVacationRequest = repHrVacationRequest;
             _repHrVacationDoc = repHrVacationDoc;
@@ -45,10 +45,10 @@ namespace HR.BLL
                 ToDate = mdl.ToDate,
                 DayCount = mdl.DayCount,
                 Remarks1 = mdl.Note,
-                TrDate = DateTime.UtcNow.AddHours(3),
+                TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                 TrNo = CurrentTrNo,
                 CreatedBy = mdl.EmployeeId.ToString(),
-                CreatedAt = DateTime.UtcNow.AddHours(3),
+                CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours),
                 RequestImageUrl=mdl.ImageUrl,
                 BookId = setting.DefVacReqBookId,
                 TermId = setting.TermId,
@@ -81,7 +81,7 @@ namespace HR.BLL
             entity.ToDate = mdl.ToDate;
             entity.DayCount = mdl.DayCount;
             entity.Remarks1 = mdl.Note;
-            entity.UpdateAt = DateTime.UtcNow.AddHours(3);
+            entity.UpdateAt = DateTime.UtcNow.AddHours(HourServer.hours);
             entity.UpdateBy = mdl.EmployeeId.ToString();
             if (mdl.ImageUrl != "")
             {
@@ -137,7 +137,6 @@ namespace HR.BLL
             };
         }
 
-
         public string GetVacationtypeAsString(VacationTypeEnum Type, string langKey)
         {
             string _name = "";
@@ -150,8 +149,6 @@ namespace HR.BLL
             };
             return _name;
         }
-
-
 
         public object ManageVacationRequest(int id, bool accept, int userId, string langKey)
         {
@@ -166,7 +163,7 @@ namespace HR.BLL
             if (!accept)
             {
                 entity.IsPosted = true;
-                entity.PostedDate = DateTime.UtcNow.AddHours(3);
+                entity.PostedDate = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.Postedby = userId + "";
                 bool action = _repHrVacationRequest.Update(entity);
                 return new
@@ -198,10 +195,10 @@ namespace HR.BLL
                     ToDate = entity.ToDate,
                     DayCount = entity.DayCount,
                     Remarks1 = entity.Remarks1,
-                    TrDate = DateTime.UtcNow.AddHours(3),
+                    TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                     TrNo = CurrentTrNo,
                     CreatedBy = userId + "",
-                    CreatedAt = DateTime.UtcNow.AddHours(3)
+                    CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours)
                 });
                 return new
                 {
@@ -213,5 +210,34 @@ namespace HR.BLL
             }
         }
 
+        public int GetCount()  => _repHrVacationRequest.Find(x => !x.DeletedAt.HasValue).Count();
+
+        public DataTableResponse LoadData(DataTableDTO mdl)
+        {
+            string sql = @"select Hr_VacationRequest.VacRequestId as Id,Hr_Employees.Name1 as EmployeeArName,Hr_Employees.Name2 as EmployeeEnName,convert(varchar, Hr_VacationRequest.FromDate, 23) as FromDate
+                        ,Hr_VacationRequest.CreatedAt ,convert(varchar, Hr_VacationRequest.ToDate, 23) as ToDate,Hr_VacationRequest.VacationType,Hr_VacationRequest.Remarks1,
+                        Hr_VacationRequest.RequestImageUrl from Hr_VacationRequest 
+                        join Hr_Employees on Hr_Employees.EmpId =Hr_VacationRequest.EmpId where Hr_VacationRequest.DeletedAt is null";
+            List<VacationRequestMV> query = _repHrVacationRequest.ExecuteStoredProcedure<VacationRequestMV>(sql, null, System.Data.CommandType.Text).ToList();
+            query.ForEach(x => x.VacationTypeStr = GetVacationtypeAsString((VacationTypeEnum)x.VacationType, "ar"));
+
+            var total = query?.Count() ?? 0;
+
+            var data = query.Where(x => (mdl.SSearch.IsEmpty()
+            || x.VacationTypeStr.ToLower().Contains(mdl.SSearch.ToLower())
+            || x.EmployeeArName.ToLower().Contains(mdl.SSearch.ToLower())
+            || x.EmployeeEnName.ToLower().Contains(mdl.SSearch.ToLower())
+            )
+
+            );
+            data = (mdl.SSortDir_0) switch
+            {
+                SortingDir.asc => data.OrderBy(x => x.CreatedAt),
+                SortingDir.Desc => data.OrderByDescending(x => x.CreatedAt),
+                _ => data
+            };
+            var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList();
+            return new DataTableResponse(total, _data.ToList());
+        }
     }
 }

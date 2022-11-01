@@ -1,0 +1,83 @@
+﻿<div class="row list-grid">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">الاجازات </h4>
+                <table id="datatable" class="table ">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الاسم انجلزى</th>
+                            <th>من</th>
+                            <th>الى</th>
+                            <th>نوع الاجازه</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+@section Scripts
+{
+    <script>
+        let tbl;
+        $(() => {
+        tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadData")',
+            [
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.employeeArName ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.employeeEnName ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.fromDate ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.toDate ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.vacationTypeStr ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.remarks1 ?? "") + '</label>'
+                    }
+                },
+            ]
+        ));
+
+        $('#datatable').find('tbody').on('click', 'tr', function () {
+            let elem = $(this);
+            let id = elem.find('.edit').attr('data-id');
+            elem.closest('tbody').find('tr').css('background-color', 'white');
+            elem.css('background-color', '#a2a9bd');
+        });
+    });
+    </script>
+}

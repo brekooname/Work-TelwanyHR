@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using HR.Static;
 using HR.BLL.DTO;
 using HR.Common;
 using HR.DAL;
+using HR.Static;
 using HR.Tables.Tables;
 
 using Microsoft.EntityFrameworkCore;
@@ -400,7 +401,7 @@ namespace HR.BLL
             var entity = _rep.GetById(id);
             if (entity != null)
             {
-                entity.DeletedAt = DateTime.UtcNow.AddHours(3);
+                entity.DeletedAt = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.DeletedBy = "1";
                 var action = _rep.Update(entity);
                 return new
@@ -422,7 +423,7 @@ namespace HR.BLL
             var entity = _repUsers.GetById(id);
             if (entity != null)
             {
-                entity.DeletedAt = DateTime.UtcNow.AddHours(3);
+                entity.DeletedAt = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.DeletedBy = "1";
                 var action = _repUsers.Update(entity);
                 return new

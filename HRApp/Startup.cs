@@ -28,7 +28,7 @@ namespace HRApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SmartERPStandardContext>(options => options.UseSqlServer(SmtpConfig.GrtConnectionString()));
+            services.AddDbContext<SmartERPStandardContext>(options => options.UseSqlServer(SmtpConfig.GetConnectionString()));
             //Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure<SmtpConfig>(services, Configuration.GetSection("ConnectionString"));
            
             services.AddControllers();
@@ -108,12 +108,10 @@ namespace HRApp
 
             app.UseEndpoints(endpoints =>
             {
-                
                 endpoints.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute(
                   "Default", pattern: "{controller=home}/{action=index}/{id?}"
                   );
-
             });
         }
     }

@@ -20,6 +20,7 @@ namespace HRApp.Areas.Api
     {
         private readonly AccountBll _accountBll;
         private readonly EmployeeBll _employeeBll;
+
         public AccountController(AccountBll accountBll, EmployeeBll employeeBll)
         {
             _accountBll = accountBll;
@@ -37,7 +38,7 @@ namespace HRApp.Areas.Api
             {
                 return new { status = 500, Token = "", Message = "ادخل كلمة السر" };
             }
-            string token = _accountBll.LogIn(mdl, out int userType,out string error,out string logo);
+            string token = _accountBll.LogIn(mdl, out int userType, out string error, out string logo);
 
             if (token.IsEmpty()) return new { status = 500, Token = "", Message = "  تأكد من اسم المستخدم وكلمة السر" };
             if (!error.IsEmpty()) return new { status = 500, Token = "", Message = error };
@@ -49,7 +50,7 @@ namespace HRApp.Areas.Api
                 UserTypeName = userType == 0 ? "User" : userType == 2 ? "Manager" : userType == 5 ? "Hr" : "",
                 Token = token,
                 Message = "تم تسجيل الدخول بنجاح",
-                Logo=logo
+                Logo = logo
             };
         }
 
@@ -93,7 +94,7 @@ namespace HRApp.Areas.Api
         {
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
-            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,true);
+            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey, true);
             return result;
         }
 
@@ -102,7 +103,7 @@ namespace HRApp.Areas.Api
         {
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
-            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,false);
+            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey, false);
             return result;
         }
 
@@ -120,7 +121,7 @@ namespace HRApp.Areas.Api
         {
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
-            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,true,false);
+            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey, true, false);
             return result;
         }
 
@@ -129,7 +130,7 @@ namespace HRApp.Areas.Api
         {
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
-            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey,false,false);
+            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey, false, false);
             return result;
         }
 

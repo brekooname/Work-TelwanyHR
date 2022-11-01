@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
-
+using HR.Static;
 using HR.BLL.DTO;
 using HR.Common;
 using HR.DAL;
@@ -103,7 +102,7 @@ namespace HR.BLL
             var entity = _repJob.GetById(id);
             if (entity!=null)
             {
-                entity.DeletedAt = DateTime.UtcNow.AddHours(3);
+                entity.DeletedAt = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.DeletedBy = "1";
                 var action = _repJob.Update(entity);
                 return new
@@ -125,6 +124,7 @@ namespace HR.BLL
         {
             return new SelectList(_repJob.GetAll().Where(x => !x.DeletedAt.HasValue).Select(x => new { Id = x.JobId, Name = x.Jname1 }).ToList(), "Id", "Name");
         }
+
         public DataTableResponse LoadData(DataTableDTO mdl)
         {
             var query = _repJob.GetAll().Where(x => x.DeletedAt == null);

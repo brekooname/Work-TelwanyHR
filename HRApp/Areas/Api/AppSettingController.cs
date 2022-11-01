@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HR;
 using HR.BLL;
 using HR.BLL.DTO;
+using HR.DAL.Smtp;
 using HR.Tables.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,15 +20,30 @@ namespace HRApp.Areas.Api
     public class AppSettingController : ControllerBase
     {
         private readonly AppSettingBll Service;
+        string conn = SmtpConfig.GetConnectionString();
+        string dconn = SmtpConfig.DynamicConnection();
         public AppSettingController(AppSettingBll service)
         {
             Service = service;
         }
-
-        public object Activision(bool isActive)
+        
+        public object ActivisionSystem(bool isActive)
         {
             try
             {
+                int active = isActive ? 1 : 0;
+                string checkActivisionSystemIsExistsSql = @"if not exists (select * from sysobjects where name='ActivisionSystem' and xtype='U')
+                    create table ActivisionSystem ( IsActive bit not null )
+                    if not exists (select * from ActivisionSystem) 
+                    INSERT INTO ActivisionSystem (IsActive) VALUES (0)",
+                    updateActivisionSystemSql = @"update ActivisionSystem set IsActive = " + active;
+
+                BaseDataAccess dataAccess = new BaseDataAccess(conn);
+                var connection = dataAccess.GetConnection();
+
+                int createAndInsert = dataAccess.ActivisionSystem(checkActivisionSystemIsExistsSql, connection),
+                updateActivisionSystem = dataAccess.ActivisionSystem(updateActivisionSystemSql, connection);
+
                 return new
                 {
                     Status = 200,
@@ -36,7 +52,6 @@ namespace HRApp.Areas.Api
             }
             catch
             {
-
                 return new
                 {
                     Status = 500,
@@ -45,14 +60,28 @@ namespace HRApp.Areas.Api
             }
         }
 
+        public object Activision()
+        {
+            try
+            {
+                BaseDataAccess dataAccess = new BaseDataAccess(conn);
+                var connection = dataAccess.GetConnection();
+                string sql = @"select * from ActivisionSystem";
+                ActivisionSystem activisionSystem = dataAccess.CheckActivisionSystem(sql, connection);
+                
+                return new { Status = 200, IsActive = activisionSystem?.IsActive };
+            }
+            catch { return new {  Status = 500, IsActive = false }; }
+        }
+
         public object Find(string productKey, string LangKey = "ar")
         {
-            string conLocal = "Data Source=.;Initial Catalog=AppHrUrl;User Id=sa;Password=A271185b;MultipleActiveResultSets=true",
-                conOnline = "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_apphrurl;User Id=db_a44da5_apphrurl_admin;Password=A271185b; MultipleActiveResultSets = true",
-                sql = "select * from AppSetting where AppSetting.ProductKey = '" + productKey + "'",
+            //string conLocal = "Data Source=.;Initial Catalog=AppHrUrl;User Id=sa;Password=A271185b;MultipleActiveResultSets=true",
+            //    conOnline = "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_apphrurl;User Id=db_a44da5_apphrurl_admin;Password=A271185b; MultipleActiveResultSets = true",
+                string sql = "select * from AppSetting where AppSetting.ProductKey = '" + productKey + "'",
                 message = LangKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully";
 
-            BaseDataAccess dataAccess = new BaseDataAccess(conOnline);
+            BaseDataAccess dataAccess = new BaseDataAccess(dconn);
             var connection = dataAccess.GetConnection();
             try
             {
@@ -83,7 +112,6 @@ namespace HRApp.Areas.Api
         }
     }
 }
-
 
 public class BaseDataAccess
 {
@@ -230,7 +258,7 @@ public class BaseDataAccess
             AppSetting app = null;
             try
             {
-                SqlDataReader rdr = command.ExecuteReader();  // vs also alternatives, command.ExecuteReader();  or await command.ExecuteNonQueryAsync();
+                SqlDataReader rdr = command.ExecuteReader();   
                 while (rdr.Read())
                 {
                     app = new AppSetting();
@@ -243,9 +271,43 @@ public class BaseDataAccess
             catch (Exception Ex)
             {
                 app = null;
-                connection.Close();
                 string msg = Ex.Message.ToString();
             }
+            connection.Close();
+            return app;
+        }
+    }
+
+    public int ActivisionSystem(string sql, SqlConnection connection)
+    {
+        using (var command = new SqlCommand(sql, connection))
+        {
+            var res = command.ExecuteNonQuery();
+            return res;
+        }
+    }
+
+    public ActivisionSystem CheckActivisionSystem(string sql, SqlConnection connection)
+    {
+        using (var command = new SqlCommand(sql, connection))
+        {
+            ActivisionSystem app = null;
+            try
+            {
+                SqlDataReader rdr = command.ExecuteReader();
+                while (rdr.Read())
+                {
+                    app = new ActivisionSystem();
+                    app.IsActive = bool.Parse(rdr["IsActive"].ToString());
+                }
+                rdr.Close();
+            }
+            catch (Exception Ex)
+            {
+                app = null;
+                string msg = Ex.Message.ToString();
+            }
+            connection.Close();
             return app;
         }
     }

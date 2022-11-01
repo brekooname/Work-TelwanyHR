@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using HR.DAL.Smtp;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -128,7 +129,8 @@ namespace HR.DAL
         {
             /// in _db.Database.GetDbConnection().ConnectionString if the password didn't get inside connection string
             /// please make sure you add => "Persist Security Info=true;" inside your connection string in appsetting.json
-            SqlConnection sqlConnection = new SqlConnection(_db.Database.GetDbConnection().ConnectionString);
+            //SqlConnection sqlConnection = new SqlConnection(_db.Database.GetDbConnection().ConnectionString);
+            SqlConnection sqlConnection = new SqlConnection(SmtpConfig.GetConnectionString());
             SqlCommand cmd = new SqlCommand(query, sqlConnection);
             if (parameters != null)
                 foreach (var item in parameters)

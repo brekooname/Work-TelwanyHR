@@ -1,0 +1,4 @@
+﻿{
+	"ConnectionString": "Data Source=.\\SQL2014;Initial Catalog=HR;User Id=sa;Password=123;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;",
+	"DynamicConnection": "Data Source=.\\SQL2014;Initial Catalog=AppSetting;User Id=sa;Password=123;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;"
+}

@@ -691,7 +691,7 @@ namespace HR.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(SmtpConfig.GrtConnectionString());
+                optionsBuilder.UseSqlServer(SmtpConfig.GetConnectionString());
                 //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
                 //optionsBuilder.UseSqlServer

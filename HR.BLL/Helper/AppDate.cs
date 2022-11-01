@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Static;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,7 +10,7 @@ namespace HR.BLL.Helper
         public static int GetDateIndex()
         {
             
-            int day = (int)DateTime.Now.AddHours(3).DayOfWeek+1;
+            int day = (int)DateTime.Now.AddHours(HourServer.hours).DayOfWeek+1;
             if (day == 7)
             {
                 return 0;

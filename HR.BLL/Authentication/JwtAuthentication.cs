@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using HR.Static;
+using Microsoft.IdentityModel.Tokens;
 
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,7 +30,7 @@ namespace HR.BLL
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(new [] { new Claim(ClaimTypes.Name, userId) }),
-                Expires = DateTime.UtcNow.AddHours(3).AddYears(1),
+                Expires = DateTime.UtcNow.AddHours(HourServer.hours).AddYears(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
                 SecurityAlgorithms.HmacSha256Signature)
             };

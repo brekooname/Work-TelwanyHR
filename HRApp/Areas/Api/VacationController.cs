@@ -108,7 +108,6 @@ namespace HRApp.Areas.Api
 
         }
 
-
         public object EmployeeVacations(int pageIndex = 1, bool total = false, string langKey = "ar")
         {
             var userId = HttpContext.User?.Identity?.Name;
@@ -118,6 +117,5 @@ namespace HRApp.Areas.Api
 
             return result;
         }
-
     }
 }

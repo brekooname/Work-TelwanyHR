@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HR.DAL\HR.DAL.csproj" />
+    <ProjectReference Include="..\HR.Static\HR.Static.csproj" />
   </ItemGroup>
 
 </Project>

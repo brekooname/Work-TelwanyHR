@@ -45,7 +45,6 @@ namespace HR.BLL.DTO
             }
         }
 
-
         public int IDisplayLength
         {
             get => _Length; set

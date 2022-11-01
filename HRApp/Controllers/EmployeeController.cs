@@ -43,34 +43,40 @@ namespace HRApp.Controllers
         public IActionResult Index()
         {
             ViewData["Count"] = _EmployeeBll.GetCount();
-
             ViewData["shifts"] = _ShiftBLL.Shifts();
+            ViewData["Period"] = _ShiftBLL.Period();
             ViewData["jobs"] = _JobBLL.Jobs();
             ViewData["stores"] = _StoreBLL.Stores();
             ViewData["locations"] = _LocationBLL.locations();
 
             return View();
         }
+       
         public IActionResult Report()
         {
             return View();
         }
+        
         public IActionResult DelayReport()
         {
             return View();
         }
+        
         public IActionResult DelayReportDetails()
         {
             return View();
         }
+        
         public IActionResult Users()
         {
             ViewData["Count"] = _EmployeeBll.GetUsersCount();
 
             return View();
         }
+        
         public JsonResult GetEmployees(int ?id)
             => Json(_EmployeeBll.getEmployeesNotHaveUser(id));
+        
         public JsonResult Add(HrEmployees mdl)
         {
             var file = HttpContext.Request.Form.Files;
@@ -92,6 +98,7 @@ namespace HRApp.Controllers
             else
                 return Json(_EmployeeBll.Edit(mdl));
         }
+        
         public JsonResult AddUser(GUsers mdl)
         {
             if (mdl.UserId == 0)
@@ -99,40 +106,51 @@ namespace HRApp.Controllers
             else
                 return Json(_EmployeeBll.EditUser(mdl));
         }
+        
         public JsonResult Delete(int id)
         {
             return Json(_EmployeeBll.Delete(id));
         }
+        
         public JsonResult DeleteUser(int id)
         {
             return Json(_EmployeeBll.DeleteUser(id));
         }
+        
         public JsonResult DisplayUserDataForEdit(int id)
              => Json(_EmployeeBll.DisplayUserDataForEdit(id));
+        
         public JsonResult DisplayDataForEdit(int id)
       => Json(_EmployeeBll.DisplayDataForEdit(id));
+        
         public JsonResult LoadData(DataTableDTO mdl)
         {
             return Json(_EmployeeBll.LoadData(mdl));
         }
+        
         public JsonResult LoadUsersData(DataTableDTO mdl)
         {
             return Json(_EmployeeBll.LoadUsersData(mdl));
         }
+        
         public JsonResult LoadAttendanceData(DataTableDTO mdl)
         {
             return Json(_AccountBll.LoadAttendanceData(mdl));
         }
+        
         public JsonResult LoadDelayReportData(DataTableDTO mdl)
         {
             return Json(_reportsBLL.LoadDelayReport(mdl));
         }
+        
         public JsonResult LoadDelayDetailsReportData(DataTableDTO mdl)
         {
             return Json(_reportsBLL.LoadDelayDetailsReport(mdl));
         }
+        
         public JsonResult GetItemByIndex(int index)
 => Json(_EmployeeBll.GetItemByIndex(index));  
+        
         public JsonResult GetUserItemByIndex(int index)
 => Json(_EmployeeBll.GetUserItemByIndex(index));
     }

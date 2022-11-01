@@ -13,8 +13,8 @@ namespace HR.BLL.DTO
         public byte? VacationType { get; set; }
         public string Note { get; set; }
         public string ImageUrl { get; set; }
-
     }
+
     public class EditVacationRequestDTO
     {
         public int VacationRequestId { get; set; }

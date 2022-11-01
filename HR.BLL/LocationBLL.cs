@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
+using HR.Static;
 using HR.BLL.DTO;
 using HR.Common;
 using HR.DAL;
@@ -124,7 +124,7 @@ where rowNum={index}
             var entity = _repLocation.GetById(id);
             if (entity!=null)
             {
-                entity.DeletedAt = DateTime.UtcNow.AddHours(3);
+                entity.DeletedAt = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.DeletedBy = "1";
                 var action = _repLocation.Update(entity);
                 return new

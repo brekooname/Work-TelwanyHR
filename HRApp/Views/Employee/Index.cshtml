@@ -1,4 +1,7 @@
-﻿
+﻿@{ 
+    HR.BLL.ShiftBLL.PeriodsTablesVM Period = ViewData["Period"] as HR.BLL.ShiftBLL.PeriodsTablesVM;
+}
+
 
 <div class="row ">
     <div class="col-12">
@@ -41,7 +44,7 @@
                     <div class="col-md-3">
 
                         <div class="d-flex flex-wrap gap-2 float-end">
-                      
+
                             <button class="btn btn-success btn-sm" type="button" onclick="funcCancel()">جديد</button>
                             <button type="button" onclick="Save()" class="btn btn-primary waves-effect waves-light">حفظ </button>
                             <button class="btn btn-danger btn-sm" type="button" onclick="funPublicDelete()">حذف</button>
@@ -131,7 +134,7 @@
                                     <option value="" disabled="disabled">اختر</option>
                                     @foreach (var item in ViewData["shifts"] as IEnumerable<ShiftDTO>)
                                     {
-                                    <option value="@item.ShiftId" data-numberofdays="@item.NumberOfDays" data-count="@item.HourCount">@item.Name1</option>
+                                        <option value="@item.ShiftId" data-numberofdays="@item.NumberOfDays" data-count="@item.HourCount">@item.Name1</option>
                                     }
                                 </select>
                             </div>
@@ -235,26 +238,21 @@
 
 
     <script>
+        function Save() {
+            let frmData = new FormData($('#frmCreate')[0]);
+            let stores = $('#StoreId').val();
+            $(stores).each(function (i, v) {
+                frmData.append(`HrEmpStores[${i}].StoreId`, v);
+            });
+            let Shifts = $('#ShiftId').val();
+            $(Shifts).each(function (i, v) {
+                frmData.append(`HrEmpShifts[${i}].ShiftId`, v);
+            });
 
-
-    function Save() {
-
-
-        let frmData = new FormData($('#frmCreate')[0]);
-        let stores = $('#StoreId').val();
-        $(stores).each(function (i, v) {
-            frmData.append(`HrEmpStores[${i}].StoreId`, v);
-        });
-        let Shifts = $('#ShiftId').val();
-        $(Shifts).each(function (i, v) {
-            frmData.append(`HrEmpShifts[${i}].ShiftId`, v);
-        });
-
-        let Locations = $('#LocationId').val();
-        $(Locations).each(function (i, v) {
-
-            frmData.append(`HrEmpLocations[${i}].LocationId`, v);
-        });
+            let Locations = $('#LocationId').val();
+            $(Locations).each(function (i, v) {
+                frmData.append(`HrEmpLocations[${i}].LocationId`, v);
+            });
 
             let url = '@Url.GetAction("Add")';
             $.ajax(getAjaxObject(url, frmData, (res) => {
@@ -264,92 +262,98 @@
                     $('[name="EmpId"]').val("0");
                 }
             }));
-    }
-
+        }
 
         let tbl;
         let frm = $('#frmCreate');
-    $(() => {
+        $(() => {
         tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadData")',
-                [
+            [
 
-                    {
-                        data: null,
-                        bSortable: false,
-                        render: function (data, type, row) {
-                            return '<label>' + (data.code ?? "") + '</label>'
-                        }
-                    },
-                    {
-                        data: null,
-                        bSortable: false,
-                        render: function (data, type, row) {
-                            return '<label>' + (data.name ?? "") + '</label>'
-                        }
-                    },
-                    {
-                        data: null,
-                        bSortable: false,
-                        render: function (data, type, row) {
-                            return '<label>' + (data.gender ?? "") + '</label>'
-                        }
-                    },
-                 {
-                        data: null,
-                        bSortable: false,
-                        render: function (data, type, row) {
-
-                            return `  <a class="btn btn-outline-secondary btn-sm edit" data-id='${data.id}' onclick="displayDataForEdit('${data.id}')" title="Edit">
-                                        <i class="fa fa-pencil-alt"></i>
-                                    </a>
-                                    <a class="btn btn-outline-danger btn-sm delete" onclick='funDelete("${data.id}")' title="Delete">
-                                        <i class="fa fa-trash-alt"></i>
-                                    </a>`;
-                        }
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.code ?? "") + '</label>'
                     }
-
-                ]
-            )
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.name ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return '<label>' + (data.gender ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        return `  <a class="btn btn-outline-secondary btn-sm edit" data-id='${data.id}' onclick="displayDataForEdit('${data.id}')" title="Edit">
+                                    <i class="fa fa-pencil-alt"></i>
+                                </a>
+                                <a class="btn btn-outline-danger btn-sm delete" onclick='funDelete("${data.id}")' title="Delete">
+                                    <i class="fa fa-trash-alt"></i>
+                                </a>`;
+                    }
+                }
+            ])
         );
 
         $('#datatable').find('tbody').on('click', 'tr', function () {
             let elem = $(this);
             let id = elem.find('.edit').attr('data-id');
-
             elem.closest('tbody').find('tr').css('background-color', 'white');
             elem.css('background-color', '#a2a9bd');
-
-
             displayDataForEdit(id);
         });
 
         $('[name="Salary"]').on('input', function () {
-            let value = 0;
-            let countOfHours = 1;
-            let shifts = $('#ShiftId').val().length;
-            if ($(this).val() != "" && shifts>0) {
-                value = parseFloat($(this).val());
-                var _shifts = $('#ShiftId>option:selected').map(function (i, v) { return parseFloat($(v).attr('data-count')) }).get();
-                var _shiftsDays = $('#ShiftId>option:selected').map(function (i, v) { return parseFloat($(v).attr('data-numberofdays')) }).get();
-                countOfHours = 0;
-                for (var i = 0; i < _shifts.length; i++) {
-               
-                    countOfHours += ((_shifts[i] > 0 ? _shifts[i] : (-1 * _shifts[i])) / _shiftsDays[i]) * (_shiftsDays[i]*4);
-                }
-                if (countOfHours == 0)
-                    countOfHours = 1;
-            }
-          
+            debugger
 
-            $('[name="DailyCost"]').val((value / ((countOfHours/24))))
-            $('[name="HourlyCost"]').val((value / (countOfHours)))
-            $('[name="TotalDailyCost"]').val((value / (countOfHours/24)))
-            $('[name="TotalHourlyCost"]').val((value / (countOfHours)))
+        let value = parseFloat($(this).val());
+        //let value = 0;
+        let countOfHours = 1;
+        let shifts = $('#ShiftId').val().length;
+        if ($(this).val() != "" && shifts > 0) {
+            //value = parseFloat($(this).val());
+            //var _shifts = $('#ShiftId>option:selected').map(function (i, v) { return parseFloat($(v).attr('data-count')) }).get();
+            //var _shiftsDays = $('#ShiftId>option:selected').map(function (i, v) { return parseFloat($(v).attr('data-numberofdays')) }).get();
+            //countOfHours = 0;
 
+            //for (var i = 0; i < _shifts.length; i++) {
+            //    countOfHours += ((_shifts[i] > 0 ? _shifts[i] : (-1 * _shifts[i])) / _shiftsDays[i]) * (_shiftsDays[i] * 4);
+            //}
+
+            //if (countOfHours == 0)
+            //    countOfHours = 1;
+        }
+
+            //let DailyCost = (value / ((countOfHours / 24))),
+            //    HourlyCost = (value / (countOfHours)),
+            //    TotalDailyCost = (value / (countOfHours / 24)),
+            //    TotalHourlyCost = (value / (countOfHours));
+
+            let DailyCost = (value / @(Period.PeriodWorkDays)),
+            HourlyCost = (DailyCost / @(Period.DailyWorkHours)),
+            TotalDailyCost = (value / @(Period.PeriodWorkDays)),
+            TotalHourlyCost = (DailyCost / @(Period.DailyWorkHours));
+
+            $('[name="DailyCost"]').val(DailyCost);
+            $('[name="HourlyCost"]').val(HourlyCost);
+            $('[name="TotalDailyCost"]').val(TotalDailyCost);
+            $('[name="TotalHourlyCost"]').val(TotalHourlyCost);
+
+            console.log(DailyCost, HourlyCost, TotalDailyCost, TotalHourlyCost);
         });
 
         $('#ShiftId').on('change', function () {
-
             $('[name="Salary"]').trigger('input');
         });
     });

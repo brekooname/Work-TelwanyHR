@@ -12,6 +12,7 @@ using HR.BLL.DTO;
 using HR.BLL.Helper;
 using HR.Common;
 using HR.DAL;
+using HR.Static;
 using HR.Tables.Tables;
 
 using Microsoft.Data.SqlClient;
@@ -29,13 +30,11 @@ namespace HR.BLL
 {
     public class AccountBll
     {
+        private readonly IJwtAuthentication _jwtAuthentication;
         private readonly IRepository<MsCompany> _repCompany;
         private readonly IRepository<HrEmpKPIS> _repKPISEmployee;
         private readonly IRepository<GUsers> _repUser;
         private readonly IRepository<Mobile_Attendance> _repMobile_Attendance;
-
-        private readonly IJwtAuthentication _jwtAuthentication;
-
         private readonly IRepository<HrEmpShift> _repHrEmpShift;
         private readonly IRepository<HrEmpStore> _repHrEmpStore;
         private readonly IRepository<HrEmpLocations> _repHrEmpLocations;
@@ -70,7 +69,7 @@ namespace HR.BLL
         public object Companies()
         {
             SqlConnection con = new SqlConnection(@"Data Source=sql5108.site4now.net,1433,1433;Initial Catalog=DB_A44DA5_HrCompaniesDB;User Id=DB_A44DA5_HrCompaniesDB_admin;Password=A271185b;MultipleActiveResultSets=true");
-con.Open();
+            con.Open();
             SqlCommand c = new SqlCommand($"select * from CompanyDetails  ", con);
             c.CommandType = System.Data.CommandType.Text;
             SqlDataReader read = c.ExecuteReader();
@@ -85,7 +84,7 @@ con.Open();
                             CompanyId = read["CompanyId"].ToString(),
                             CompanyName = read["CompanyName"].ToString()
                         }
-                       ); 
+                       );
                 }
             }
             return Companies;
@@ -117,14 +116,14 @@ con.Open();
             return Companies.FirstOrDefault();
         }
 
-        public string LogIn(LoginDTO mdl, out int userType,out string error,out string logo)
+        public string LogIn(LoginDTO mdl, out int userType, out string error, out string logo)
         {
-            var user = _repUser.GetAll().FirstOrDefault(x =>
-            x.UserName.ToLower() == mdl.UserName.ToLower()
-            && x.Password == mdl.Password);
-            userType = 0; error = "";logo = "";
-            if(_repCompany.GetAll().Any())
-            logo = "/Upload/" + _repCompany.GetAll().FirstOrDefault()?.LogoUrl??"";
+            var user = _repUser.GetAll().FirstOrDefault(x => x.UserName.ToLower() == mdl.UserName.ToLower() && x.Password == mdl.Password
+            && x.DeletedAt == null && x.DeletedBy == null);
+
+            userType = 0; error = ""; logo = "";
+            if (_repCompany.GetAll().Any())
+                logo = "/Upload/" + _repCompany.GetAll().FirstOrDefault()?.LogoUrl ?? "";
             if (user != null)
             {
                 if (user.MacAddress.IsEmpty())
@@ -142,7 +141,7 @@ con.Open();
                     userType = user.UserType.Value;
                     return _jwtAuthentication.Authenticate(user.EmpId.Value + "");
                 }
-                else if  (user.UserType != 0)
+                else if (user.UserType != 0)
                 {
                     userType = user.UserType.Value;
                     return _jwtAuthentication.Authenticate(user.EmpId.Value + "");
@@ -154,47 +153,46 @@ con.Open();
 
         public DataTableResponse LoadAttendanceData(DataTableDTO mdl)
         {
-           
-                var query = _repMobile_Attendance.GetAll().Where(x=>(!mdl.dateFrom.HasValue||x.TrDate.Value.Date>=mdl.dateFrom.Value.Date)&&
-                (!mdl.dateTo.HasValue || x.TrDate.Value.Date <= mdl.dateTo.Value.Date)
-                ).Include(x => x.HrEmployees).Include(x => x.MsStores).Include(x => x.HrShifts);
-                var total = query?.Count() ?? 0;
 
-                var data = query.Where(x => (mdl.SSearch.IsEmpty()
-                || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
-                || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower()))
+            var query = _repMobile_Attendance.GetAll().Where(x => (!mdl.dateFrom.HasValue || x.TrDate.Value.Date >= mdl.dateFrom.Value.Date) &&
+            (!mdl.dateTo.HasValue || x.TrDate.Value.Date <= mdl.dateTo.Value.Date)
+            ).Include(x => x.HrEmployees).Include(x => x.MsStores).Include(x => x.HrShifts);
+            var total = query?.Count() ?? 0;
 
-                );
-                data = (mdl.SSortDir_0) switch
-                {
-                    SortingDir.asc => data.OrderBy(x => x.AttendanceId),
-                    SortingDir.Desc => data.OrderByDescending(x => x.AttendanceId),
-                    _ => data
-                };
-                var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList().Select(x => new
-                {
-                    name = x.HrEmployees!=null? x.HrEmployees.Name1:"",
-                    code = x.HrEmployees!=null?x.HrEmployees.EmpCode:"",
-                    Store = x.MsStores!=null?x.MsStores.StoreDescA:"",
-                    Date = x.TrDate.HasValue? x.TrDate.Value.ToString("dd-MM-yyyy HH:mm"):"",
-                    Status = x.Status,
-                    InOrOut = x.In.Value ? "حضور" : "انصراف"
-                });
-                return new DataTableResponse(total, _data.ToList());
-           
+            var data = query.Where(x => (mdl.SSearch.IsEmpty()
+            || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
+            || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower()))
+
+            );
+            data = (mdl.SSortDir_0) switch
+            {
+                SortingDir.asc => data.OrderBy(x => x.AttendanceId),
+                SortingDir.Desc => data.OrderByDescending(x => x.AttendanceId),
+                _ => data
+            };
+            var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList().Select(x => new
+            {
+                name = x.HrEmployees != null ? x.HrEmployees.Name1 : "",
+                code = x.HrEmployees != null ? x.HrEmployees.EmpCode : "",
+                Store = x.MsStores != null ? x.MsStores.StoreDescA : "",
+                Date = x.TrDate.HasValue ? x.TrDate.Value.ToString("dd-MM-yyyy HH:mm") : "",
+                Status = x.Status,
+                InOrOut = x.In.Value ? "حضور" : "انصراف"
+            });
+            return new DataTableResponse(total, _data.ToList());
+
         }
 
         public string GetUserData(int id)
         {
-            return _repUser.Find(x => x.UserId == id).Select(x => new { Name = x.FirstName + " " + x.LastName }).Select(x=>x.Name).FirstOrDefault();
+            return _repUser.Find(x => x.UserId == id).Select(x => new { Name = x.FirstName + " " + x.LastName }).Select(x => x.Name).FirstOrDefault();
         }
 
-
-        public loginResponseDTO WebLogIn(LoginDTO mdl,out int id)
+        public loginResponseDTO WebLogIn(LoginDTO mdl, out int id)
         {
             id = 0;
 
-            if ( string.IsNullOrEmpty(mdl.UserName))
+            if (string.IsNullOrEmpty(mdl.UserName))
                 return new loginResponseDTO
                 {
                     status = 500,
@@ -208,21 +206,19 @@ con.Open();
                     message = "ادخل  كلمة السر"
                 };
 
-            var user = _repUser.GetAll().FirstOrDefault(x =>
-            x.UserName.ToLower() == mdl.UserName.ToLower()
-            && x.Password == mdl.Password);
+            var user = _repUser.GetAll().FirstOrDefault(x => x.UserName.ToLower() == mdl.UserName.ToLower() && x.Password == mdl.Password
+            && x.DeletedAt == null && x.DeletedBy == null);
 
-            if (user != null )
+            if (user != null)
             {
                 id = user.UserId;
-                return new loginResponseDTO {  status=200,message="تم التسجيل بنجاح"};
+                return new loginResponseDTO { status = 200, message = "تم التسجيل بنجاح" };
             }
-            else 
+            else
             {
                 return new loginResponseDTO { status = 500, message = "تأكد من اسم المستخدم وكلمة السر  " };
             }
         }
-
 
         public object GetProfileData(int EmpId, string langKey)
         {
@@ -267,7 +263,7 @@ con.Open();
 
             if (employeeKPIS.Any())
             {
-                KPISValue =(int)Math.Floor((decimal)employeeKPIS.Sum(x => x.KpiPercent) / (decimal)employeeKPIS.Count());
+                KPISValue = (int)Math.Floor((decimal)employeeKPIS.Sum(x => x.KpiPercent) / (decimal)employeeKPIS.Count());
             }
 
             #endregion
@@ -287,11 +283,11 @@ con.Open();
             };
         }
 
-        public object CheckQR(Point location, int EmpId, string langKey,bool In,bool shift=true)
+        public object CheckQR(Point location, int EmpId, string langKey, bool In, bool shift = true)
         {
-            int ? store = null;
-            int ? shiftId = null;
-            var dateNow = DateTime.UtcNow.AddHours(3);
+            int? store = null;
+            int? shiftId = null;
+            var dateNow = DateTime.UtcNow.AddHours(HourServer.hours);
             var now = dateNow.Date;
 
             Location StoreLocation = new Location();
@@ -310,27 +306,28 @@ con.Open();
                 shiftId = _shiftId;
                 int dayOfWeek = _AppDate.GetDateIndex();
                 var employeeShifts = _repHrEmpShift.GetAll().Where(x => x.EmpId == EmpId).Include(x => x.HrShifts)
-                    .ToList().Select(x=>new {
-                       StartTime= dayOfWeek == 0 ? (x.HrShifts.FirstShfDay1tFrom.HasValue ? (
-                       
-                       dateNow.TimeOfDay - x.HrShifts.FirstShfDay1tFrom.Value.TimeOfDay).Hours:0) :
-                       dayOfWeek == 1 ? (x.HrShifts.FirstShftDay2From.HasValue?(dateNow.TimeOfDay - x.HrShifts.FirstShftDay2From.Value.TimeOfDay).Hours:0):
-                       dayOfWeek == 2 ? (x.HrShifts.FirstShftDay3From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay3From.Value.TimeOfDay).Hours:0):
-                       dayOfWeek == 3 ? (x.HrShifts.FirstShftDay4From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay4From.Value.TimeOfDay).Hours:0):
-                       dayOfWeek == 4 ? (x.HrShifts.FirstShftDay5From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay5From.Value.TimeOfDay).Hours:0):
-                       dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6From.Value.TimeOfDay).Hours:0):
-                       dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7From.Value.TimeOfDay).Hours:0):0,
+                    .ToList().Select(x => new
+                    {
+                        StartTime = dayOfWeek == 0 ? (x.HrShifts.FirstShfDay1tFrom.HasValue ? (
+
+                       dateNow.TimeOfDay - x.HrShifts.FirstShfDay1tFrom.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 1 ? (x.HrShifts.FirstShftDay2From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay2From.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 2 ? (x.HrShifts.FirstShftDay3From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay3From.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 3 ? (x.HrShifts.FirstShftDay4From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay4From.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 4 ? (x.HrShifts.FirstShftDay5From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay5From.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6From.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7From.Value.TimeOfDay).Hours : 0) : 0,
 
                         EndTime = dayOfWeek == 0 ?
                         (x.HrShifts.FirstShftDay1To.HasValue ?
-                        (dateNow.TimeOfDay - x.HrShifts.FirstShftDay1To.Value.TimeOfDay).Hours:0) :
+                        (dateNow.TimeOfDay - x.HrShifts.FirstShftDay1To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 1 ? (x.HrShifts.FirstShftDay2To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay2To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 2 ? (x.HrShifts.FirstShftDay3To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay3To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 3 ? (x.HrShifts.FirstShftDay4To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay4To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 4 ? (x.HrShifts.FirstShftDay5To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay5To.Value.TimeOfDay).Hours : 0) :
-                       dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6To.Value.TimeOfDay).Hours : 0):
-                       dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7To.Value.TimeOfDay).Hours : 0): 0,
-                        ShiftId =x.ShiftId
+                       dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6To.Value.TimeOfDay).Hours : 0) :
+                       dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7To.Value.TimeOfDay).Hours : 0) : 0,
+                        ShiftId = x.ShiftId
                     }).ToList();
 
                 if (!employeeShifts.Any())
@@ -381,61 +378,53 @@ con.Open();
             }
             else
             {
-
                 var checkIfAttend = _repMobile_Attendance.GetAll()
                   .Where(x => x.Emp_Id == EmpId && x.TrDate.Value.Date == now && x.In == In && (!x.Status.HasValue || x.Status.Value));
 
                 if (checkIfAttend.Any())
                 {
-
                     return new
                     {
                         Status = 500,
-                        message =
-                 (langKey == "ar" ? $" مسبقأ {(In ? "الحضور" : "الانصراف")}تم تأكيد  "
-             : $"{(In ? "Attendance" : "Leave")} has already been confirmed")
+                        message = (langKey == "ar" ? $" مسبقأ {(In ? "الحضور" : "الانصراف")}تم تأكيد  " : $"{(In ? "Attendance" : "Leave")} has already been confirmed")
                     };
-
-
                 }
 
-                var EmpStore = _repHrEmpLocations.GetAll().Where(x => x.EmpId == EmpId ).Include(x => x.HrLocation);
+                var EmpStore = _repHrEmpLocations.GetAll().Where(x => x.EmpId == EmpId).Include(x => x.HrLocation);
 
                 if (!EmpStore.Any())
                 {
                     return new
                     {
                         Status = 500,
-                        message =
-                  (langKey == "ar" ? "هذا الموظف غير مرتبط  بموقع" : "This employee is not related to Location")
+                        message = (langKey == "ar" ? "هذا الموظف غير مرتبط  بموقع" : "This employee is not related to Location")
                     };
-
                 }
+
                 StoreLocation = EmpStore.Select(x => new Location
                 {
                     Lat = x.HrLocation.Lat,
                     Lng = x.HrLocation.Lng
                 }).FirstOrDefault();
-            }
+             }
 
-            double distance = CalculateDistanceBetweenTwoPoints(location, new Point
-            { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
+            double distance = CalculateDistanceBetweenTwoPoints(location, new Point { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
 
             var ch = distance >= 0 && distance <= 500;
 
-            if(ch)
-            _repMobile_Attendance.Insert(new Mobile_Attendance
-            {
-                Emp_Id = EmpId,
-                In = In,
-                Out = !In,
-                Status=ch,
-                StoreId = store,
-                ShftId=shiftId,
-                TrDate = DateTime.UtcNow.AddHours(3),
-                Distance = distance,
-                Qr = location.Qr
-            });
+            if (ch)
+                _repMobile_Attendance.Insert(new Mobile_Attendance
+                {
+                    Emp_Id = EmpId,
+                    In = In,
+                    Out = !In,
+                    Status = ch,
+                    StoreId = store,
+                    ShftId = shiftId,
+                    TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
+                    Distance = distance,
+                    Qr = location.Qr
+                });
 
             return new
             {
@@ -449,46 +438,38 @@ con.Open();
             };
         }
 
-
         public object CheckQR(string _location, int EmpId, string langKey)
         {
             var loc = _location.Split(",");
             Point location = new Point { lat = double.Parse(loc[0]), lng = double.Parse(loc[1]) };
 
-            return CheckQR(location, EmpId, langKey,true);
+            return CheckQR(location, EmpId, langKey, true);
         }
 
-
-        public object GetQrCode(int storeId,int width,int height)
+        public object GetQrCode(int storeId, int width, int height)
         {
-        
+
             return new
             {
-                qrCode = ("store="+storeId+"&shiftId="+0+"&DateTime="+DateTime.UtcNow.AddHours(3).ToString("MM-dd-yyyy HH:mm:ss")).ToImageQrcode(width, height),
-                date=DateTime.UtcNow.AddHours(3).ToString("MM-dd-yyyy HH:mm:ss")
-            }; 
+                qrCode = ("store=" + storeId + "&shiftId=" + 0 + "&DateTime=" + DateTime.UtcNow.AddHours(HourServer.hours).ToString("MM-dd-yyyy HH:mm:ss")).ToImageQrcode(width, height),
+                date = DateTime.UtcNow.AddHours(HourServer.hours).ToString("MM-dd-yyyy HH:mm:ss")
+            };
         }
-
-
-     
 
         public double CalculateDistanceBetweenTwoPoints(Point p1, Point p2)
         {
             var R = 6378137;
-            var dLat = rad(p2.lat - p1.lat); var dLong = rad(p2.lng - p1.lng);
-            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos(rad(p1.lat)) * Math.Cos(rad(p2.lat))
-                * Math.Sin(dLong / 2) * Math.Sin(dLong / 2);
+            var dLat = rad(p2.lat - p1.lat);
+            var dLong = rad(p2.lng - p1.lng);
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos(rad(p1.lat)) * Math.Cos(rad(p2.lat)) * Math.Sin(dLong / 2) * Math.Sin(dLong / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)); var d = R * c;
             return d;
         }
-  
-
 
         private double rad(double x)
         {
             return x * Math.PI / 180;
         }
-
 
         private int GetEmployeeId(int userId)
         {
@@ -503,10 +484,8 @@ con.Open();
 
             return user.EmpId.Value;
         }
-
-
-
     }
+
     /// <summary>
     /// This Class Manage a string to convert it to a barcode or qrcode
     /// </summary>
@@ -597,5 +576,4 @@ con.Open();
             return new ManageQrBarcode(content, width, height).Base64ImageSrc(BarcodeFormat.CODE_128);
         }
     }
-
 }

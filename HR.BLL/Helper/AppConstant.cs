@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HR.Static;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,6 +19,6 @@ namespace HR.Common
     }
     public struct AppDate
     {
-        public static DateTime Now = DateTime.UtcNow.AddHours(3);
+        public static DateTime Now = DateTime.UtcNow.AddHours(HourServer.hours);
     }
 }

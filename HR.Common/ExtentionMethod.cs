@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-
+using HR.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -14,14 +14,13 @@ namespace HR
 {
     public static class ExtentionMethods
     {
-
         #region User
 
         public static void AppendCookie(this IResponseCookies responseCookies, string key, string value)
         {
             responseCookies.Append(key, value, new CookieOptions()
             {
-                Expires = DateTime.UtcNow.AddHours(3).AddYears(5),
+                Expires = DateTime.UtcNow.AddHours(HourServer.hours).AddYears(5),
                 HttpOnly = true,
                 Path = "/",
                 //TODO please un comment the next line if y will use HTTPS
@@ -34,21 +33,17 @@ namespace HR
         #region Random Numbers
         public static int RandomNumber(this int number)
         {
-            Random random = new Random((int)DateTime.UtcNow.AddHours(3).Ticks);
+            Random random = new Random((int)DateTime.UtcNow.AddHours(HourServer.hours).Ticks);
             return random.Next(1111111, 9999999);
         }
         #endregion
-
-
  
-
         /// <summary>
         /// Check If This Field Is Empty Or Null or "" or white space
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
         public static bool IsEmpty(this string s) => s == null || string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s);
-
 
         /// <summary>
         /// Check If This Field Is Empty Or Null or "" or white space
@@ -154,18 +149,12 @@ namespace HR
             return default;
         }
 
-        public static string GetArrayAsString(this long[] ids)
-           => ids == null ? null : ids.Select(x => x.ToString()).Aggregate((a, b) => a + "," + b);
-
+        public static string GetArrayAsString(this long[] ids) => ids == null ? null : ids.Select(x => x.ToString()).Aggregate((a, b) => a + "," + b);
 
         public static TValue GetAttributeValue<TAttribute, TValue>(this Type type, Func<TAttribute, TValue> valueSelector) where TAttribute : Attribute
         {
             return (type.GetCustomAttributes(typeof(TAttribute), true).FirstOrDefault() is TAttribute att) ? valueSelector(att) : default;
         }
-
-
-
-  
 
         public static bool IsAjaxRequest(this HttpRequest request)
         {
@@ -188,9 +177,7 @@ namespace HR
             return (data.Where(x => EmptyValues.Any(y => y == x.GetValue(mdl)))?.Count() ?? 0) == 0;
         }
 
-
-        public static string AsString(this DateTime date, string format = "MM-dd-yyyy")
-            => date.ToString(format);
+        public static string AsString(this DateTime date, string format = "MM-dd-yyyy") => date.ToString(format);
 
         public static string UpperFirstLetter(this string s, string separator = "")
         {
@@ -210,7 +197,6 @@ namespace HR
             return s.Replace("\r", "").Replace("\n", "").Replace(Environment.NewLine, "").TrimStart().TrimEnd();
         }
 
-
         /// <summary>
         /// Generate a unique number depending on date time
         /// </summary>
@@ -218,13 +204,12 @@ namespace HR
         /// <returns></returns>
         public static string UniqueNumber(this object obj)
         {
-            var date = DateTime.UtcNow.AddHours(3);
+            var date = DateTime.UtcNow.AddHours(HourServer.hours);
             var dateString = date.Year + "" + date.Month + "" + date.Day + "" +
                 (date.Millisecond.ToString().Length == 3 ? date.Millisecond.ToString().Substring(0, 2) : date.Millisecond + "");
             string res= dateString + (new Random()).Next(1, 1000); 
             return res;
         }
-
 
         #region Api
 
@@ -245,10 +230,5 @@ namespace HR
         }
 
         #endregion
-
-      
-
-
     }
-
 }

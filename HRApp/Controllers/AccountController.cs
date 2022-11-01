@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using HR.BLL;
 using HR.BLL.DTO;
 using HR.Common;
-
+using HR.Static;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,7 +35,7 @@ namespace HRApp.Controllers
             {
                 CookieOptions cookieOptions = new CookieOptions();
                 cookieOptions.Path = "/";
-                cookieOptions.Expires = DateTime.UtcNow.AddHours(3).AddYears(1);
+                cookieOptions.Expires = DateTime.UtcNow.AddHours(HourServer.hours).AddYears(1);
                       Response.Cookies.Append(AppConstant.Cookies.userId, id + "",cookieOptions);
                 return Redirect("/home/index");
             }

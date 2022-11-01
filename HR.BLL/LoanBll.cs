@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
+using HR.Static;
 using HR.BLL.DTO;
+using HR.Common;
 using HR.DAL;
+using HR.Static;
 using HR.Tables.Tables;
 
 namespace HR.BLL
@@ -38,10 +40,10 @@ namespace HR.BLL
                 InstallmentValue = mdl.InstallmentValue,
                 LastInstallmentValue = (mdl.LoanValue - (mdl.InstallmentValue * mdl.InstallmentsCount)),
                 Remarks1 = mdl.Note,
-                TrDate = DateTime.UtcNow.AddHours(3),
+                TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                 TrNo = CurrentTrNo,
                 CreatedBy = mdl.EmployeeId.ToString(),
-                CreatedAt = DateTime.UtcNow.AddHours(3),
+                CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours),
                 RequestImageUrl = mdl.ImageUrl,
                 BookId = setting.DefLoanReqBookId,
                 TermId = setting.TermId,
@@ -73,7 +75,7 @@ namespace HR.BLL
             entity.InstallmentValue = mdl.InstallmentValue;
             entity.LastInstallmentValue = (mdl.LoanValue - (mdl.InstallmentValue * mdl.InstallmentsCount));
             entity.Remarks1 = mdl.Note;
-            entity.UpdateAt = DateTime.UtcNow.AddHours(3);
+            entity.UpdateAt = DateTime.UtcNow.AddHours(HourServer.hours);
             entity.UpdateBy = mdl.EmployeeId.ToString();
             if (mdl.ImageUrl != "")
             {
@@ -102,7 +104,6 @@ namespace HR.BLL
                     InstallmentsCount = x.Installments,
                     Remarks1 = x.Remarks1,
                     RequestImageUrl = x.RequestImageUrl
-
                 }).FirstOrDefault();
         }
 
@@ -119,7 +120,7 @@ namespace HR.BLL
             if (!accept)
             {
                 entity.IsPosted = true;
-                entity.PostedDate = DateTime.UtcNow.AddHours(3);
+                entity.PostedDate = DateTime.UtcNow.AddHours(HourServer.hours);
                 entity.Postedby = userId + "";
                 bool action = _repHrEmpLoanRequest.Update(entity);
                 return new
@@ -151,10 +152,10 @@ namespace HR.BLL
                     InstallmentValue = entity.InstallmentValue,
                     LastInstallmentValue = (entity.LoanValue - (entity.InstallmentValue * entity.Installments)),
                     Remarks1 = entity.Remarks1,
-                    TrDate = DateTime.UtcNow.AddHours(3),
+                    TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                     // ManualTrNo = CurrentTrNo + "",
                     CreatedBy = entity.EmpId + "",
-                    CreatedAt = DateTime.UtcNow.AddHours(3)
+                    CreatedAt = DateTime.UtcNow.AddHours(HourServer.hours)
                 });
                 return new
                 {
@@ -166,6 +167,31 @@ namespace HR.BLL
             }
         }
 
+        public DataTableResponse LoadData(DataTableDTO mdl)
+        {
+            string sql = @"select Hr_EmpLoanRequest.EmpLoanReqId as Id,Hr_Employees.Name1 as EmployeeArName,Hr_Employees.Name2 as EmployeeEnName,Hr_EmpLoanRequest.CreatedAt,
+                        Hr_EmpLoanRequest.InstallmentValue, Hr_EmpLoanRequest.Installments ,Hr_EmpLoanRequest.LoanValue, Hr_EmpLoanRequest.Remarks1,
+                        Hr_EmpLoanRequest.RequestImageUrl from Hr_EmpLoanRequest 
+                        join Hr_Employees on Hr_Employees.EmpId = Hr_EmpLoanRequest.EmpId where Hr_EmpLoanRequest.DeletedAt is null";
 
+            List<LoanRequestMV> query = _repHrEmpLoanRequest.ExecuteStoredProcedure<LoanRequestMV>(sql, null, System.Data.CommandType.Text).ToList();
+
+            var total = query?.Count() ?? 0;
+
+            var data = query.Where(x => (mdl.SSearch.IsEmpty()
+                || x.EmployeeArName.ToLower().Contains(mdl.SSearch.ToLower())
+                || x.EmployeeEnName.ToLower().Contains(mdl.SSearch.ToLower())
+            )
+
+            );
+            data = (mdl.SSortDir_0) switch
+            {
+                SortingDir.asc => data.OrderBy(x => x.CreatedAt),
+                SortingDir.Desc => data.OrderByDescending(x => x.CreatedAt),
+                _ => data
+            };
+            var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList();
+            return new DataTableResponse(total, _data.ToList());
+        }
     }
 }

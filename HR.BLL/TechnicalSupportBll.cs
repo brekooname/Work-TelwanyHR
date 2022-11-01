@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using HR.Static;
 using HR.BLL.DTO;
 using HR.DAL;
 using HR.Tables.Tables;
@@ -23,7 +23,7 @@ namespace HR.BLL
             bool action = _repTechnicalSupport.Insert(new Mobile_TechnicalSupport { 
              Emp_Id=mdl.EmployeeId,
             Problem=mdl.Problem,
-            TrDate=DateTime.UtcNow.AddHours(3)
+            TrDate=DateTime.UtcNow.AddHours(HourServer.hours)
             });
             return new
             {
