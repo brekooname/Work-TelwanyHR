@@ -1,8 +1,4 @@
-﻿
-
-
-
-<div class="row">
+﻿<div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
@@ -33,9 +29,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
-
                 <h4 class="card-title">الحضور والانصراف </h4>
-
 
                 <table id="datatable" class="table ">
                     <thead>
@@ -45,17 +39,9 @@
                             <th>الفرع</th>
                             <th>التاريخ والوقت</th>
                             <th>حضور ام انصراف</th>
-                            @*<th> الوظيفة</th>*@
-                            @*<th> الفرع</th>*@
-                            @*<th> فتره العمل</th>*@
-                            @*<th> موقع العمل</th>*@
-
                         </tr>
                     </thead>
-
-
                 </table>
-
             </div>
         </div>
     </div> <!-- end col -->
@@ -65,18 +51,11 @@
 
 @section Scripts
 {
-
-
     <script>
-
-
-
         let tbl;
         $(() => {
-            
-            tbl = $('#datatable').DataTable(LoadDataTableObj(`@Url.GetAction("LoadAttendanceData")`,
+            tbl = $('#datatable').DataTable(LoadDataTableObj(`@Url.GetAction("LoadAttendanceReportData")`,
                 [
-
                     {
                         data: null,
                         bSortable: false,
@@ -97,16 +76,14 @@
                         render: function (data, type, row) {
                             return '<label>' + (data.store ?? "") + '</label>'
                         }
-                    }
-               ,
+                    },
                     {
                         data: null,
                         bSortable: false,
                         render: function (data, type, row) {
                             return '<label>' + (data.date ?? "") + '</label>'
                         }
-                    }
-               ,
+                    },
                     {
                         data: null,
                         bSortable: false,
@@ -114,20 +91,14 @@
                             return '<label>' + (data.inOrOut ?? "") + '</label>'
                         }
                     }
-
-
                 ]
-            )
-            );
-
-    });
+            ));
+        });
 
         function Search() {
             let dateFrom = $('[name="dateFrom"]').val();
             let dateTo = $('[name="dateTo"]').val();
-            tbl.ajax.url(`@Url.GetAction("LoadAttendanceData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null,false);
+            tbl.ajax.url(`@Url.GetAction("LoadAttendanceReportData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null, false);
         }
-
-
     </script>
 }

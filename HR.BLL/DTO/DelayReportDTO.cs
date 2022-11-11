@@ -7,6 +7,7 @@ namespace HR.BLL.DTO
     public class DelayReportDTO
     {
         public int Emp_Id { get; set; }
+        public decimal? DailyCost { get; set; }
         public int Total { get; set; }
         public string Name1 { get; set; }
         public int MinCount { get; set; }

@@ -67,8 +67,6 @@
     <!-- <body data-layout="horizontal" data-topbar="dark"> -->
     <!-- Begin page -->
     <div id="layout-wrapper">
-
-
         <header id="page-topbar">
             <div class="navbar-header">
                 <div class="d-flex">
@@ -229,6 +227,13 @@
                     </li>
 
                     <li>
+                        <a href="/Employee/AttendanceReport" class="waves-effect">
+                            <i class="bx bx-money"></i>
+                            <span key="t-file-manager">تقرير التأخيرات</span>
+                        </a>
+                    </li>
+                    
+                    <li>
                         <a href="/Employee/DelayReport" class="waves-effect">
                             <i class="bx bx-money"></i>
                             <span key="t-file-manager">تقرير الخصومات</span>
@@ -241,11 +246,6 @@
                             <span key="t-file-manager">تقرير تفصيل الخصومات</span>
                         </a>
                     </li>
-
-
-
-
-
                 </ul>
             </div>
             <!-- Sidebar -->
@@ -307,7 +307,6 @@
     <script src="/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
     <script src="/assets/libs/select2/js/select2.min.js"></script>
     <script>
-
         function LoadDataTableObj(url, columns, createdRow = function (row, data, dataIndex) { }, pageLength = 20, bfilter = true) {
             var obj = {
                 bRetrieve: true,
@@ -402,12 +401,9 @@
                 elem.val('0');
             }
         }
-
-
     </script>
 
     <script>
-
         function excuteResponse(res) {
             if (res.status == 200) {
                 swal.fire({

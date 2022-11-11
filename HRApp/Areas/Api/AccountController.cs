@@ -90,6 +90,15 @@ namespace HRApp.Areas.Api
         }
 
         [HttpPost]
+        public object ScanQRAsString(string point, [FromQuery] string langKey = "ar")
+        {
+            var userId = HttpContext.User?.Identity?.Name;
+            if (userId.IsEmpty()) return Unauthorized();
+            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey);
+            return result;
+        }
+
+        [HttpPost]
         public object ScanQRIn([FromBody] Point point, [FromQuery] string langKey = "ar")
         {
             var userId = HttpContext.User?.Identity?.Name;
@@ -104,15 +113,6 @@ namespace HRApp.Areas.Api
             var userId = HttpContext.User?.Identity?.Name;
             if (userId.IsEmpty()) return Unauthorized();
             var result = _accountBll.CheckQR(point, int.Parse(userId), langKey, false);
-            return result;
-        }
-
-        [HttpPost]
-        public object ScanQRAsString(string point, [FromQuery] string langKey = "ar")
-        {
-            var userId = HttpContext.User?.Identity?.Name;
-            if (userId.IsEmpty()) return Unauthorized();
-            var result = _accountBll.CheckQR(point, int.Parse(userId), langKey);
             return result;
         }
 

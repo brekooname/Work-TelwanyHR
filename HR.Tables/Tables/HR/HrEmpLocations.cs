@@ -12,8 +12,8 @@ namespace HR.Tables.Tables
     {
         public HrEmpLocations()
         {
-         
         }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EmpLocationId { get; set; }
         [ForeignKey(nameof(HrLocation))]

@@ -153,23 +153,20 @@ namespace HR.BLL
 
         public DataTableResponse LoadAttendanceData(DataTableDTO mdl)
         {
-
-            var query = _repMobile_Attendance.GetAll().Where(x => (!mdl.dateFrom.HasValue || x.TrDate.Value.Date >= mdl.dateFrom.Value.Date) &&
-            (!mdl.dateTo.HasValue || x.TrDate.Value.Date <= mdl.dateTo.Value.Date)
-            ).Include(x => x.HrEmployees).Include(x => x.MsStores).Include(x => x.HrShifts);
+            var query = _repMobile_Attendance.GetAll().Where(x => (!mdl.dateFrom.HasValue || x.TrDate.Value.Date >= mdl.dateFrom.Value.Date)
+            && (!mdl.dateTo.HasValue || x.TrDate.Value.Date <= mdl.dateTo.Value.Date)).Include(x => x.HrEmployees).Include(x => x.MsStores).Include(x => x.HrShifts);
             var total = query?.Count() ?? 0;
 
-            var data = query.Where(x => (mdl.SSearch.IsEmpty()
-            || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
-            || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower()))
+            var data = query.Where(x => (mdl.SSearch.IsEmpty() || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
+            || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower())));
 
-            );
             data = (mdl.SSortDir_0) switch
             {
                 SortingDir.asc => data.OrderBy(x => x.AttendanceId),
                 SortingDir.Desc => data.OrderByDescending(x => x.AttendanceId),
                 _ => data
             };
+
             var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList().Select(x => new
             {
                 name = x.HrEmployees != null ? x.HrEmployees.Name1 : "",
@@ -179,8 +176,8 @@ namespace HR.BLL
                 Status = x.Status,
                 InOrOut = x.In.Value ? "حضور" : "انصراف"
             });
-            return new DataTableResponse(total, _data.ToList());
 
+            return new DataTableResponse(total, _data.ToList());
         }
 
         public string GetUserData(int id)
@@ -295,6 +292,7 @@ namespace HR.BLL
             {
                 Dictionary<string, string> Dic = new Dictionary<string, string>();
                 var keys = location.Qr.Split('&').SelectMany(x => x.Split("=")).ToArray();
+
                 for (int i = 2; i <= keys.Length; i += 2)
                 {
                     Dic.Add(keys[i - 2], keys[i - 1]);
@@ -302,13 +300,14 @@ namespace HR.BLL
 
                 int.TryParse(Dic["store"], out int _store);
                 int.TryParse("0"/*Dic["shiftId"]*/, out int _shiftId);
+
                 store = _store;
                 shiftId = _shiftId;
                 int dayOfWeek = _AppDate.GetDateIndex();
-                var employeeShifts = _repHrEmpShift.GetAll().Where(x => x.EmpId == EmpId).Include(x => x.HrShifts)
-                    .ToList().Select(x => new
-                    {
-                        StartTime = dayOfWeek == 0 ? (x.HrShifts.FirstShfDay1tFrom.HasValue ? (
+
+                var employeeShifts = _repHrEmpShift.GetAll().Where(x => x.EmpId == EmpId).Include(x => x.HrShifts).ToList().Select(x => new
+                {
+                    StartTime = dayOfWeek == 0 ? (x.HrShifts.FirstShfDay1tFrom.HasValue ? (
 
                        dateNow.TimeOfDay - x.HrShifts.FirstShfDay1tFrom.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 1 ? (x.HrShifts.FirstShftDay2From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay2From.Value.TimeOfDay).Hours : 0) :
@@ -318,7 +317,7 @@ namespace HR.BLL
                        dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6From.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7From.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7From.Value.TimeOfDay).Hours : 0) : 0,
 
-                        EndTime = dayOfWeek == 0 ?
+                    EndTime = dayOfWeek == 0 ?
                         (x.HrShifts.FirstShftDay1To.HasValue ?
                         (dateNow.TimeOfDay - x.HrShifts.FirstShftDay1To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 1 ? (x.HrShifts.FirstShftDay2To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay2To.Value.TimeOfDay).Hours : 0) :
@@ -327,8 +326,8 @@ namespace HR.BLL
                        dayOfWeek == 4 ? (x.HrShifts.FirstShftDay5To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay5To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 5 ? (x.HrShifts.FirstShftDay6To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay6To.Value.TimeOfDay).Hours : 0) :
                        dayOfWeek == 6 ? (x.HrShifts.FirstShftDay7To.HasValue ? (dateNow.TimeOfDay - x.HrShifts.FirstShftDay7To.Value.TimeOfDay).Hours : 0) : 0,
-                        ShiftId = x.ShiftId
-                    }).ToList();
+                    ShiftId = x.ShiftId
+                }).ToList();
 
                 if (!employeeShifts.Any())
                     return new
@@ -365,11 +364,11 @@ namespace HR.BLL
                     return new
                     {
                         Status = 500,
-                        message =
-                  (langKey == "ar" ? "هذا الموظف غير مرتبط بهذا الفرع" : "This employee is not related to this Store")
+                        message = (langKey == "ar" ? "هذا الموظف غير مرتبط بهذا الفرع" : "This employee is not related to this Store")
                     };
 
                 }
+
                 StoreLocation = EmpStore.Select(x => new Location
                 {
                     Lat = x.Stores.Lat,
@@ -401,16 +400,18 @@ namespace HR.BLL
                     };
                 }
 
-                StoreLocation = EmpStore.Select(x => new Location
-                {
-                    Lat = x.HrLocation.Lat,
-                    Lng = x.HrLocation.Lng
-                }).FirstOrDefault();
-             }
+                var _EmpStore = _repHrEmpStore.Find(x => x.EmpId == EmpId).FirstOrDefault();
+                var employeeShift = _repHrEmpShift.Find(x => x.EmpId == EmpId).FirstOrDefault();
+                store = _EmpStore?.StoreId;
+                shiftId = employeeShift?.ShiftId;
+                StoreLocation = EmpStore.Select(x => new Location { Lat = x.HrLocation.Lat, Lng = x.HrLocation.Lng }).FirstOrDefault();
+            }
 
-            double distance = CalculateDistanceBetweenTwoPoints(location, new Point { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
+            //double distance = CalculateDistanceBetweenTwoPoints(location, new Point { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
+            //var ch = distance >= 0 && distance <= 500;
 
-            var ch = distance >= 0 && distance <= 500;
+            double distance = this.distance(location.lat, location.lng, double.Parse(StoreLocation.Lat), double.Parse(StoreLocation.Lng), 'M');
+            var ch = distance <= 500;
 
             if (ch)
                 _repMobile_Attendance.Insert(new Mobile_Attendance
@@ -426,16 +427,35 @@ namespace HR.BLL
                     Qr = location.Qr
                 });
 
-            return new
+            //return new
+            //{
+            //    Status = 200,
+            //    message = ch ?
+            //    (langKey == "ar" ? (In ? "تم  تأكيد الحضور بنجاح" : "تم تأكيد الانصراف بنجاح")
+            //    : (In ? "Attendance has been confirmed successfully" : "Leave has been confirmed successfully"))
+            //    : (langKey == "ar" ? $"  تبعد عن الفرع مسافة كبيرة ولا يمكن تأكيد  {(In ? "الحضور" : "الانصراف")}"
+            //    : $"It is a long distance from the branch and {(In ? "attendance" : "leave")}  cannot be confirmed")
+            //};
+
+            string message = string.Empty;
+            if (ch)
             {
-                Status = 200,
-                message = ch ?
-                (langKey == "ar" ?
-                (In ? "تم  تأكيد الحضور بنجاح" : "تم تأكيد الانصراف بنجاح")
-                : (In ? "Attendance has been confirmed successfully" : "Leave has been confirmed successfully"))
-             : (langKey == "ar" ? $"  تبعد عن الفرع مسافة كبيرة ولا يمكن تأكيد  {(In ? "الحضور" : "الانصراف")}"
-             : $"It is a long distance from the branch and {(In ? "attendance" : "leave")}  cannot be confirmed")
-            };
+                if (langKey == "ar")
+                    message = In ? "تم  تأكيد الحضور بنجاح" : "تم تأكيد الانصراف بنجاح";
+                else
+                    message = In ? "Attendance has been confirmed successfully" : "Leave has been confirmed successfully";
+            }
+            else
+            {
+                string errorMessage = "longitude = " + location.lat + " and latitude = " + location.lng + " and distance is "+ distance;
+                if (langKey == "ar")
+                    message = $"  تبعد عن الفرع مسافة كبيرة ولا يمكن تأكيد  {(In ? "الحضور" : "الانصراف")} ";
+                else
+                    message = $"It is a long distance from the branch and {(In ? "attendance" : "leave")}  cannot be confirmed";
+
+                message += errorMessage;
+            }
+            return new { Status = 200, message = message };
         }
 
         public object CheckQR(string _location, int EmpId, string langKey)
@@ -456,15 +476,75 @@ namespace HR.BLL
             };
         }
 
-        public double CalculateDistanceBetweenTwoPoints(Point p1, Point p2)
+        public double getMiles(double meters)
         {
-            var R = 6378137;
-            var dLat = rad(p2.lat - p1.lat);
-            var dLong = rad(p2.lng - p1.lng);
-            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos(rad(p1.lat)) * Math.Cos(rad(p2.lat)) * Math.Sin(dLong / 2) * Math.Sin(dLong / 2);
-            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)); var d = R * c;
-            return d;
+            return meters * 0.000621371192;
         }
+
+        public double getMeters(double miles)
+        {
+            return miles * 1609.344;
+        }
+
+        private double distance(double lat1, double lon1, double lat2, double lon2, char unit)
+        {
+            if ((lat1 == lat2) && (lon1 == lon2))
+                return 0;
+            else
+            {
+                double theta = lon1 - lon2;
+                double dist = Math.Sin(deg2rad(lat1)) * Math.Sin(deg2rad(lat2)) + Math.Cos(deg2rad(lat1)) * Math.Cos(deg2rad(lat2)) * Math.Cos(deg2rad(theta));
+                dist = Math.Acos(dist);
+                dist = rad2deg(dist);
+                dist = dist * 60 * 1.1515;
+                if (unit == 'K')
+                {
+                    dist = dist * 1.609344;
+                }
+                else if (unit == 'N')
+                {
+                    dist = dist * 0.8684;
+                }
+                else if (unit == 'M')
+                {
+                    /// ////// Convert miles to meters
+                    dist = getMeters(dist);
+                }
+                return (dist);
+            }
+        }
+
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::  This function converts decimal degrees to radians             :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private double deg2rad(double deg)
+        {
+            return (deg * Math.PI / 180.0);
+        }
+
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        //::  This function converts radians to decimal degrees             :::
+        //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        private double rad2deg(double rad)
+        {
+            return (rad / Math.PI * 180.0);
+        }
+
+
+        /// <summary>
+        /// //// old code to calc distance
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        //public double CalculateDistanceBetweenTwoPoints(Point p1, Point p2)
+        //{
+        //    var R = 6378137;
+        //    var dLat = rad(p2.lat - p1.lat);
+        //    var dLong = rad(p2.lng - p1.lng);
+        //    var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos(rad(p1.lat)) * Math.Cos(rad(p2.lat)) * Math.Sin(dLong / 2) * Math.Sin(dLong / 2);
+        //    var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)); var d = R * c;
+        //    return d;
+        //}
 
         private double rad(double x)
         {
@@ -492,7 +572,6 @@ namespace HR.BLL
     internal class ManageQrBarcode
     {
         #region Props
-
         /// <summary>
         /// Content To Convert It To a barcode image, qrcode image  etc... 
         /// </summary>
@@ -507,22 +586,18 @@ namespace HR.BLL
         /// Height Of The Barcode , QrCode , etc ....  Image
         /// </summary>
         public int Height { get; private set; }
-
         #endregion
 
         #region Ctors
-
         public ManageQrBarcode(string Content, int Width, int Height)
         {
             this.Content = Content;
             this.Width = Width;
             this.Height = Height;
         }
-
         #endregion
 
         #region Methods
-
         /// <summary>
         /// It Converts a string to barcode image , qrcode image ,etc...
         /// </summary>
@@ -558,10 +633,9 @@ namespace HR.BLL
         /// <param name="barcodeFormat">Format is a barcode(Code_128) or qrcode or whatever you want</param>
         /// <returns></returns>
         public string Base64ImageSrc(BarcodeFormat barcodeFormat) => ExtentionMethod.ImageFromBase64(Convert.ToBase64String(Stream(barcodeFormat)));
-
-
         #endregion
     }
+
     public static class ExtentionMethod
     {
         public static string ImageFromBase64(string base64) => string.Format("data:image/png;base64,{0}", base64);

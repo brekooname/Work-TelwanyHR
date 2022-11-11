@@ -381,11 +381,27 @@ namespace HR.BLL
 
         public object DisplayDataForEdit(int id)
         {
-            return _rep.GetAll().Include(x=>x.HrEmpShifts).Include(x=>x.HrEmpStores).Include(x=>x.HrEmpLocations).Where(x => x.EmpId == id)
-                .Select(x => new { Stores = x.HrEmpStores.Select(x => x.StoreId).ToList(),
-                    Shifts= x.HrEmpShifts.Select(x=>x.ShiftId).ToList(),
-                    locations = x.HrEmpLocations.Select(x=>x.LocationId).ToList(),
-                    Gender=x.Gender.ToString().ToLower(), x.JobId, x.Name1,x.EmpCode,x.EmpId,x.Phone2,x.Salary ,x.DailyCost,x.HourlyCost,x.TotalDailyCost,x.TotalHourlyCost, x.Phone1 ,x.Email,x.Remarks}).FirstOrDefault();
+            var test = _rep.GetAll().Include(x => x.HrEmpShifts).Include(x => x.HrEmpStores).Include(x => x.HrEmpLocations).Where(x => x.EmpId == id)
+                .Select(x => new {
+                    Stores = x.HrEmpStores.Select(x => x.StoreId).ToList(),
+                    Shifts = x.HrEmpShifts.Select(x => x.ShiftId).ToList(),
+                    locations = x.HrEmpLocations.Select(x => x.LocationId).ToList(),
+                    Gender = x.Gender.ToString().ToLower(),
+                    x.JobId,
+                    x.Name1,
+                    x.EmpCode,
+                    x.EmpId,
+                    x.Phone2,
+                    x.Salary,
+                    x.DailyCost,
+                    x.HourlyCost,
+                    x.TotalDailyCost,
+                    x.TotalHourlyCost,
+                    x.Phone1,
+                    x.Email,
+                    x.Remarks
+                }).FirstOrDefault();
+            return test;
         }
 
         

@@ -26,6 +26,7 @@ namespace HRApp.Controllers
         AccountBll _AccountBll;
         ReportsBLL _reportsBLL;
         IWebHostEnvironment _webHostEnvironment;
+
         public EmployeeController(StoreBLL storeBLL, ShiftBLL shiftBLL, JobBLL jobBLL, LocationBLL 
             locationBLL, EmployeeBll employeeBll, AccountBll accountBll,
             ReportsBLL reportsBLL, IWebHostEnvironment webHostEnvironment)
@@ -53,6 +54,11 @@ namespace HRApp.Controllers
         }
        
         public IActionResult Report()
+        {
+            return View();
+        }
+        
+        public IActionResult AttendanceReport()
         {
             return View();
         }
@@ -133,16 +139,21 @@ namespace HRApp.Controllers
             return Json(_EmployeeBll.LoadUsersData(mdl));
         }
         
-        public JsonResult LoadAttendanceData(DataTableDTO mdl)
+        public JsonResult LoadAttendanceReportData2(DataTableDTO mdl)
+        {
+            return Json(_reportsBLL.LoadDelayReport(mdl, true));
+        }
+        
+        public JsonResult LoadAttendanceReportData(DataTableDTO mdl)
         {
             return Json(_AccountBll.LoadAttendanceData(mdl));
         }
-        
+
         public JsonResult LoadDelayReportData(DataTableDTO mdl)
         {
             return Json(_reportsBLL.LoadDelayReport(mdl));
         }
-        
+
         public JsonResult LoadDelayDetailsReportData(DataTableDTO mdl)
         {
             return Json(_reportsBLL.LoadDelayDetailsReport(mdl));

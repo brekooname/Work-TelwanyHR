@@ -19,7 +19,6 @@ namespace HR.BLL
             _rep = rep;
         }
 
-
         // reportType 1=> day 2=> week  3=> month 4=> year
         public object GetDelayReport(string LanguageKey, int pageIndex = 1, int reportType = 1)
         {
@@ -46,9 +45,7 @@ namespace HR.BLL
             };
         }
 
-
-
-        public object GetDelayDetailsReport( int pageIndex = 1)
+        public object GetDelayDetailsReport(int pageIndex = 1)
         {
             var data = _rep.ExecuteStoredProcedure<DelayReportDTO>("Hr_EmpolyeeDelayDetails",
                       new Microsoft.Data.SqlClient.SqlParameter[]
@@ -107,7 +104,7 @@ namespace HR.BLL
 
         public Tuple<int, decimal> GetMinuteAndCost(string k)
         {
-            if (k==null)
+            if (k == null)
             {
                 return new Tuple<int, decimal>(0, 0);
             }
@@ -115,30 +112,38 @@ namespace HR.BLL
             return new Tuple<int, decimal>(int.Parse(x[0]), decimal.Parse(x[1]));
         }
 
-
-        public DataTableResponse LoadDelayReport(DataTableDTO mdl)
+        public DataTableResponse LoadDelayReport(DataTableDTO mdl, bool getDailyCost = false)
         {
-
-            var data = _rep.ExecuteStoredProcedure<DelayReportDTO>("Hr_GetDelayReport",
-                    new Microsoft.Data.SqlClient.SqlParameter[]
-          {
+            List<DelayReportDTO> data = _rep.ExecuteStoredProcedure<DelayReportDTO>("Hr_GetDelayReport", new Microsoft.Data.SqlClient.SqlParameter[]{
                 new Microsoft.Data.SqlClient.SqlParameter{Value=mdl.reportType,ParameterName="@reportType"},
                 new Microsoft.Data.SqlClient.SqlParameter{Value=mdl.IDisplayStart,ParameterName="@DisplayStart"},
                 new Microsoft.Data.SqlClient.SqlParameter{Value=mdl.IDisplayLength,ParameterName="@Length"}
-          });
+            });
+
+            if (getDailyCost)
+            {
+                List<int> ids = data.Select(x => x.Emp_Id).ToList();
+                List<HrEmployees> employees = _rep.Find(x => ids.Contains(x.EmpId)).ToList();
+
+                foreach (DelayReportDTO item in data)
+                {
+                    item.DailyCost = employees.FirstOrDefault(x => x.EmpId == item.Emp_Id)?.DailyCost ?? 0;
+                }
+            }
+
             return new DataTableResponse(data.FirstOrDefault()?.Total ?? 0, data.ToList().Select(x => new
             {
                 EmployeeName = x.Name1,
                 Delay = new
                 {
+                    dailyCost = x.DailyCost,
                     hour = (x.MinCount / 60).ToString(),
                     Minute = (x.MinCount - (x.MinCount / 60) * 60).ToString()
                 },
                 DelayCost = Math.Round(x.DelayCost, 3)
             }));
+        }
 
-        }      
-        
         public DataTableResponse LoadDelayDetailsReport(DataTableDTO mdl)
         {
 
@@ -193,6 +198,5 @@ namespace HR.BLL
             }));
 
         }
-
     }
 }

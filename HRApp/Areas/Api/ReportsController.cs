@@ -29,6 +29,7 @@ namespace HRApp.Areas.Api
 
             return result;
         }
+
         public object DelayDetailsReport(int pageIndex = 1)
         {
             var userId = HttpContext.User?.Identity?.Name;
