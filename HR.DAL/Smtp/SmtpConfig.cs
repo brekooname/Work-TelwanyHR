@@ -22,5 +22,12 @@ namespace HR.DAL.Smtp
             string value = (string)json["DynamicConnection"];
             return value;
         }
+
+        public static JObject GetTimeZone()
+        {
+            JObject json = JObject.Parse(File.ReadAllText(@"TimeZone.json"));
+            //string strJson = json.ToString();
+            return json;
+        }
     }
 }

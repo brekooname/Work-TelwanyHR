@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using HR.BLL.DTO;
 using HR.DAL;
+using HR.Static;
 using HR.Tables.Tables;
 
 namespace HR.BLL
@@ -16,28 +17,32 @@ namespace HR.BLL
             Service = service;
         }
 
-        public object Find(string productKey, string langKey)
+        public AppSetting GetTimeZone()
         {
             try
             {
-                AppSetting app = Service.Find(x => x.ProductKey == productKey).FirstOrDefault();
-
-                return new
-                {
-                    Status = 200,
-                    message = app == null ? (langKey == "ar" ? "لا توجد بيانات لهذه البيانات" : "There is no data for this data") 
-                    : langKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully",
-                    Url = app?.Url
-                };
+                AppSetting app = Service.GetAllAsNoTracking().FirstOrDefault();
+                HourServer.hours = app.TimeZone.Value;
+                return app;
             }
             catch
             {
-                return new
-                {
-                    Status = 500,
-                    message = langKey == "ar" ? "حدث خطأ ما اعد المحاولة" : "An error has occurred",
-                    Url="",
-                };
+                HourServer.hours = 0;
+                return null;
+            }
+        }
+
+        public bool SetTimeZone(AppSetting appSetting)
+        {
+            try
+            {
+                bool result =  Service.Update(appSetting);
+                Service.SaveChange();
+                return result;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

@@ -14,6 +14,7 @@ namespace HR.DAL
         }
 
         #region Entities
+        public virtual DbSet<AppSetting> AppSetting { get; set; }
         public virtual DbSet<Mobile_Message> Mobile_Messages { get; set; }
         public virtual DbSet<Mobile_TechnicalSupport> Mobile_TechnicalSupport { get; set; }
         public virtual DbSet<Mobile_Attendance> Mobile_Attendance { get; set; }
@@ -690,39 +691,19 @@ namespace HR.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {
                 optionsBuilder.UseSqlServer(SmtpConfig.GetConnectionString());
-                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
-                //optionsBuilder.UseSqlServer("Server=DESKTOP-S02Q4PR\\SQL2014;Database=HREmpty;Trusted_Connection=True;");
-                //optionsBuilder.UseSqlServer
-                //   (
-                //    "Data Source=SQL5092.site4now.net,1433,1433;Initial Catalog=db_a75fc0_smarterpstandard;User Id=db_a75fc0_smarterpstandard_admin;Password=saad123allah;MultipleActiveResultSets=true"
-                //    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
-
-                //optionsBuilder.UseSqlServer
-                //   (
-                //    "Data Source=SQL5109.site4now.net;Initial Catalog=db_a44da5_hr2;User Id=db_a44da5_hr2_admin;Password=A271185b;MultipleActiveResultSets=true"
-                //    ,sqlServerOptions => sqlServerOptions.CommandTimeout(120));
-
-                /// hr for Ihab //////////////
-                //optionsBuilder.UseSqlServer
-                //   (
-                //    "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_hrforihab;User Id=db_a44da5_hrforihab_admin;Password=A271185b;MultipleActiveResultSets=true"
-                //    , sqlServerOptions => sqlServerOptions.CommandTimeout(120));
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<AppSetting>(entity =>
-            //{
-            //    entity.HasKey(e => e.Id);
+            modelBuilder.Entity<AppSetting>(entity =>
+            {
+                entity.HasKey(e => e.Id);
 
-            //    entity.ToTable("AppSetting");
+                entity.ToTable("AppSetting");
 
-            //    entity.Property(e => e.ProductKey).HasMaxLength(int.MaxValue);
-            //    entity.Property(e => e.Url).HasMaxLength(int.MaxValue);
-            //});
+                entity.Property(e => e.TimeZone).IsRequired(false);
+            });
 
             modelBuilder.Entity<AssetAssetAddDoc>(entity =>
             {

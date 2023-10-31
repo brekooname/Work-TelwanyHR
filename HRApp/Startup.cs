@@ -4,6 +4,7 @@ using System.Text;
 using HR.BLL;
 using HR.DAL;
 using HR.DAL.Smtp;
+using HR.Static;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +24,7 @@ namespace HRApp
             Configuration = configuration;
         }
 
+        private AppSettingBll appSetting;
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -85,13 +87,17 @@ namespace HRApp
             services.AddScoped(typeof(HomeBLL));
             services.AddScoped(typeof(SettingBLL));
             services.AddScoped(typeof(AppSettingBll));
+
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AppSettingBll appSetting)
         {
-           
+            this.appSetting = appSetting;
+            var setting = appSetting.GetTimeZone();
+            HourServer.hours = setting == null ? 0 : setting.TimeZone.Value;
+
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()

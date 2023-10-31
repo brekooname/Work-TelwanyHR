@@ -8,6 +8,7 @@ using HR;
 using HR.BLL;
 using HR.BLL.DTO;
 using HR.DAL.Smtp;
+using HR.Static;
 using HR.Tables.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +20,15 @@ namespace HRApp.Areas.Api
     [ApiController]
     public class AppSettingController : ControllerBase
     {
-        private readonly AppSettingBll Service;
+        //private readonly AppSettingBll Service;
+        //public AppSettingController(AppSettingBll service)
+        //{
+        //    Service = service;
+        //}
+        
         string conn = SmtpConfig.GetConnectionString();
         string dconn = SmtpConfig.DynamicConnection();
-        public AppSettingController(AppSettingBll service)
-        {
-            Service = service;
-        }
-        
+
         public object ActivisionSystem(bool isActive)
         {
             try
@@ -76,8 +78,6 @@ namespace HRApp.Areas.Api
 
         public object Find(string productKey, string LangKey = "ar")
         {
-            //string conLocal = "Data Source=.;Initial Catalog=AppHrUrl;User Id=sa;Password=A271185b;MultipleActiveResultSets=true",
-            //    conOnline = "Data Source=SQL5079.site4now.net;Initial Catalog=db_a44da5_apphrurl;User Id=db_a44da5_apphrurl_admin;Password=A271185b; MultipleActiveResultSets = true",
                 string sql = "select * from AppSetting where AppSetting.ProductKey = '" + productKey + "'",
                 message = LangKey == "ar" ? "تمت العمليه بنجاح" : "operation accomplished successfully";
 
@@ -85,7 +85,7 @@ namespace HRApp.Areas.Api
             var connection = dataAccess.GetConnection();
             try
             {
-                AppSetting app = dataAccess.GetResult(sql, connection);
+                ApiAppSetting app = dataAccess.GetResult(sql, connection);
                 if(app == null)
                 {
                     sql = "select * from AppSetting where AppSetting.IsDefault = " + 1 + "";
@@ -93,21 +93,12 @@ namespace HRApp.Areas.Api
                     message = LangKey == "ar" ? "لم يتم العثور على بيانات وتم ارجاع اللينك الاساسي" : "No data was found and the original link was returned";
                 }
 
-                return new
-                {
-                    Status = 200,
-                    message = message,
-                    Url = app?.Url
-                };
+                return new { Status = 200, message = message, Url = app?.Url };
             }
             catch
             {
-                return new
-                {
-                    Status = 500,
-                    message = LangKey == "ar" ? "حدث خطأ ما اعد المحاولة" : "An error has occurred",
-                    Url = "",
-                };
+                return new { Status = 500, message = LangKey == "ar" ? "حدث خطأ ما اعد المحاولة" : "An error has occurred",
+                    Url = ""};
             }
         }
     }
@@ -251,17 +242,17 @@ public class BaseDataAccess
         return ds;
     }
 
-    public AppSetting GetResult(string sql, SqlConnection connection)
+    public ApiAppSetting GetResult(string sql, SqlConnection connection)
     {
         using (var command = new SqlCommand(sql, connection))
         {
-            AppSetting app = null;
+            ApiAppSetting app = null;
             try
             {
                 SqlDataReader rdr = command.ExecuteReader();   
                 while (rdr.Read())
                 {
-                    app = new AppSetting();
+                    app = new ApiAppSetting();
                     app.Url = rdr["Url"].ToString();
                     app.ProductKey = rdr["ProductKey"].ToString();
                     app.IsDefault = bool.Parse(rdr["IsDefault"].ToString());

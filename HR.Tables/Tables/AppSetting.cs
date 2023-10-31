@@ -10,8 +10,6 @@ namespace HR.Tables.Tables
     public partial class AppSetting
     {
         public int Id { get; set; }
-        public string ProductKey { get; set; }
-        public string Url { get; set; }
-        public bool IsDefault { get; set; }
+        public double? TimeZone { get; set; }
     }
 }

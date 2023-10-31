@@ -1,4 +1,4 @@
 ﻿{
-	"ConnectionString": "Data Source=.\\SQL2014;Initial Catalog=HR;User Id=sa;Password=123;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;",
-	"DynamicConnection": "Data Source=.\\SQL2014;Initial Catalog=AppSetting;User Id=sa;Password=123;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;"
+	"ConnectionString": "Data Source=.;Initial Catalog=HR;User Id=softgo;Password=A271185b;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;",
+	"DynamicConnection": "Data Source=.;Initial Catalog=AppSetting;User Id=sa;Password=A271185b;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;"
 }
