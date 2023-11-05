@@ -293,6 +293,7 @@ namespace HR.BLL
                 Dictionary<string, string> Dic = new Dictionary<string, string>();
                 var keys = location.Qr.Split('&').SelectMany(x => x.Split("=")).ToArray();
 
+
                 for (int i = 2; i <= keys.Length; i += 2)
                 {
                     Dic.Add(keys[i - 2], keys[i - 1]);
