@@ -10,10 +10,15 @@
     ViewData["Title"] = "Vacation Request";
 }
 
-<h3 style="color:#0d6efd;"><i class="bi bi-list-ul" style="color:#0d6efd;"></i> طلبـات الاجـازه</h3>
+<h3 style="color:#0d6efd;">
+    <i class="bi bi-blockquote-left"></i>
+    طلبـات الاجـازه
+</h3>
 <hr />
 
 
+
+@*
 <section class="row">
     <div class="col-md-4">
         <form asp-action="filter">
@@ -40,7 +45,50 @@
             <button type="submit" class="btn btn-primary"><i class="fa fa-search-alt"></i> ابحـث بحاله الطلـب و التاريخ</button>
         </form>
     </div>
-</section>
+</section>*@
+
+<form asp-action="filter">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3 custom-form">
+                <label for="productname"> اختر حاله الطلب</label>
+                <select  id="productname" name="dropSelect" class="form-select">
+                    <option value="null">الطلب تحت المراجعه</option>
+                    <option value="true">تم الموافقه </option>
+                    <option value="false">تم الرفض</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3 custom-form">
+                <label for="manufacturername">من تاريخ </label>
+                <input id="manufacturername" type="date" class="form-control" name="FromDate">
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3 custom-form">
+                <label for="productname"> الى تاريخ</label>
+                <input id="productname" type="date" class="form-control" name="ToDate">
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3 custom-form">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> ابحـث </button>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+</form>
+
+
 <hr />
 
 <div class="table-responsive">
@@ -62,7 +110,7 @@
         <tbody>
             @foreach (var item in Model.ToList<HR_EmployeeAndVacationRequestDto>())
             {
-                <tr>
+                <tr class="rw">
                     <td>@item.name</td>
                     <td>@item.fromDate.ToString("dd/MM/yyyy")</td>
                     <td>@item.ToDate.ToString("dd/MM/yyyy")</td>
@@ -84,7 +132,7 @@
                     <td>@item.Remarks1</td>
                     <td>@item.Remarks3</td>
                     <td><a style="font-size :smaller" asp-action="Edit" asp-route-VacRequestId="@item.VacRequestId" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i></a></td>
-                    <td><a style="font-size :smaller" asp-action="delete" asp-route-VacRequestId="@item.VacRequestId" class="btn btn-danger"><i class="fa fa-trash-alt"></i></a></td>
+                    <td><a style="font-size :smaller" href="javascript:;" class="btn btn-danger js-delete " data-id="@item.VacRequestId"><i class="fa fa-trash-alt"></i></a></td>
                 </tr>
             }
 
@@ -100,24 +148,38 @@
     <script>
         $(document).ready(function () {
             $('.js-delete').on('click', function () {
-                var btn = $(this);
-
-                var result = confirm("هل انت متاكد من انك تريد حذف طلب الاجازه ؟");
-
-                if (result) {
-                    $.ajax({
-                        url: '/VacationRequest/delete/' + btn.data('empid'),
-                        success: function () {
-                            btn.parents('.table').fadeOut();
-                            toastr.success('vacation deleted');
-                        },
-                        error: function () {
-                            toastr.error('Something went wrong!');
-                        }
-                    });
-                }
-
-
+                var btn = $(this);  
+                Swal.fire({
+                    title: 'تأكيد الحذف',
+                    text: 'هل أنت متأكد من رغبتك في حذف طلب الاجازه؟',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'نعم',
+                    cancelButtonText: 'لا'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: '/VacationRequest/delete/' + btn.data('id'),
+                            success: function () {
+                                btn.parents('.rw').fadeOut();
+                                Swal.fire({
+                                    title: 'تم الحذف بنجاح',
+                                    text: 'تم حذف طلب الاجازة بنجاح!',
+                                    icon: 'success'
+                                });
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    title: 'خطأ',
+                                    text: 'حدث خطأ أثناء الحذف!',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
 
             });
         });

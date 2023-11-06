@@ -4,6 +4,7 @@ using HR.Tables.Tables;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using X.PagedList;
 
 namespace HRApp.Controllers
@@ -22,6 +23,7 @@ namespace HRApp.Controllers
         {
             var item = (from emp in _db.HrEmployees
                        join vaca in _db.HrVacationRequest on emp.EmpId equals vaca.EmpId
+                       where vaca.DeletedBy == null
                        select new HR_EmployeeAndVacationRequestDto
                        {
                            EmpId = emp.EmpId,
@@ -89,11 +91,10 @@ namespace HRApp.Controllers
 
         public IActionResult filter(bool? dropSelect , DateTime? FromDate, DateTime? ToDate , int pageIndex = 1, int pageSize = 20)
         {
-           
-
             var query =from emp in _db.HrEmployees
                         join vaca in _db.HrVacationRequest on emp.EmpId equals vaca.EmpId
-                        select new HR_EmployeeAndVacationRequestDto
+                        where vaca.DeletedBy == null
+                       select new HR_EmployeeAndVacationRequestDto
                         {
                             EmpId = emp.EmpId,
                             VacRequestId = vaca.VacRequestId,
@@ -127,6 +128,22 @@ namespace HRApp.Controllers
 
         }
 
+
+       public IActionResult delete(int? id)
+        {
+            if (id == null) return BadRequest();
+
+            var vaca =  _db.HrVacationRequest.Find(id);
+
+            if (vaca == null) return NotFound();
+
+            vaca.DeletedBy = "admin";
+            vaca.DeletedAt = DateTime.Now;
+
+            _db.SaveChanges();
+
+            return RedirectToAction("index");
+        }
     }
 
 }
