@@ -34,9 +34,9 @@ namespace HR.BLL
             {
                 EmployeeCount = _repEmployee.Find(x => !x.DeletedAt.HasValue).Count(),
                 StoreCount = _repStores.Find(x => !x.DeletedAt.HasValue).Count(),
-                VacationCount= _repHrVacationRequest.Find(x => !x.DeletedAt.HasValue).Count(),
-                LeaveCount= _repHrLeavPermissionRequest.Find(x => !x.DeletedAt.HasValue).Count(),
-                LoanCount= _repHrHrEmpLoanRequest.Find(x => !x.DeletedAt.HasValue).Count()
+                VacationCount= _repHrVacationRequest.Find(x => !x.DeletedAt.HasValue && x.Closed == null).Count(),
+                LeaveCount= _repHrLeavPermissionRequest.Find(x => !x.DeletedAt.HasValue && x.Closed == null).Count(),
+                LoanCount= _repHrHrEmpLoanRequest.Find(x => !x.DeletedAt.HasValue && x.Closed == null).Count()
             };
         }
     }

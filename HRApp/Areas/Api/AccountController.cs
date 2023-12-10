@@ -32,7 +32,7 @@ namespace HRApp.Areas.Api
         {
             if (mdl.UserName.IsEmpty())
             {
-                return new { status = 500, Token = "", Message = "ادخل اسم المستخدم" };
+                return new { status = 500, Token = "", Message = "ادخل إسم المستخدم" };
             }
             else if (mdl.Password.IsEmpty())
             {
@@ -40,7 +40,7 @@ namespace HRApp.Areas.Api
             }
             string token = _accountBll.LogIn(mdl, out int userType, out string error, out string logo);
 
-            if (token.IsEmpty()) return new { status = 500, Token = "", Message = "  تأكد من اسم المستخدم وكلمة السر" };
+            if (token.IsEmpty()) return new { status = 500, Token = "", Message = "  تأكد من إسم المستخدم وكلمة السر" };
             if (!error.IsEmpty()) return new { status = 500, Token = "", Message = error };
 
             return new

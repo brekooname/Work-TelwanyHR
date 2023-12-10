@@ -1,82 +1,35 @@
-﻿@model IPagedList<SearchVacationRequest>
+﻿@model IPagedList<SearchEmpLoanRequest>
 <style>
     body {
         background-color: white;
     }
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
 <link rel="stylesheet" href="~/assets/css/PagedList.css" />
 @{
-    ViewData["Title"] = "Vacation Request";
+    ViewData["Title"] = "Report Loan Requests";
 }
 
 
 <div>
     @if (!Model.Any())
     {
+        <a asp-action="index" class="btn btn-outline-secondary mt-2 mb-2"> <i class="bi bi-backspace-fill"></i> الرجوع الي قائمه السلف</a>
+
         <div class="alert alert-info" role="alert">
-            لا يوجد طلبات إجازات !
+            لا يوجد طلبات سلف بهذا الفلتر!
         </div>
     }
     else
     {
-
         <h3 style="color:#0d6efd;">
             <i class="bi bi-blockquote-left"></i>
-            طلبـات الاجـازه
+            تقرير طلبـات السلف
         </h3>
         <hr />
 
-        <form asp-action="filter">
-            <div class="row">
-                  <div class="col-md-3">
-                            <div class="mb-3 custom-form">
-                                <label for="productname"> إسم المستخدم</label>
-                                <input id="productname" name="EmpName" type="text" class="form-control">
-                            </div>
-                  </div>
-
-                <div class="col-md-3">
-                    <div class="mb-3 custom-form">
-                        <label for="productname"> اختر حاله الطلب</label>
-                        <select id="productname" name="dropSelect" class="form-select">
-                            <option value="null">الطلب تحت المراجعه</option>
-                            <option value="true">تم الموافقه </option>
-                            <option value="false">تم الرفض</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="mb-3 custom-form">
-                        <label for="manufacturername">من تاريخ </label>
-                        <input id="manufacturername" type="date" class="form-control" name="FromDate">
-
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="mb-3 custom-form">
-                        <label for="productname"> الى تاريخ</label>
-                        <input id="productname" type="date" class="form-control" name="ToDate">
-
-                    </div>
-                </div>
-
-                <div class="col-md-3">
-                    <div class="mb-3 custom-form">
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> ابحـث </button>
-
-                    </div>
-                </div>
-
-            </div>
-
-
-
-        </form>
-
-
-        <hr />
+        <a asp-action="index" class="btn btn-outline-secondary mt-2 mb-2"> <i class="bi bi-backspace-fill"></i> الرجوع الي قائمه السلف</a>
 
         <div class="table-responsive">
             <table class="table table-striped table-sm">
@@ -85,29 +38,31 @@
                         <th scope="col">الإسم</th>
                         <th scope="col">الوظيفه</th>
                         <th scope="col">المستند</th>
-                        <th scope="col">من تاريخ</th>
-                        <th scope="col">الي تاريخ</th>
-                        <th scope="col">عدد الايام</th>
+                        <th scope="col">تاريخ الطلب</th>
+                        <th scope="col">قيمه السلفه</th>
+                        <th scope="col">عدد الاقساط</th>
+                        <th scope="col">قيمه القسط</th>
                         <th scope="col">حاله المراجعه</th>
                         <th scope="col">تاريخ المراجعه</th>
                         <th scope="col">ملاحظـات الموظف</th>
                         <th scope="col">ملاحظـات الاداره</th>
-                        <th scope="col">تعديل </th>
+                        <th scope="col">تعديل</th>
                         <th scope="col">موافقه</th>
                         <th scope="col">رفض</th>
                         <th scope="col">حذف </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.ToList<SearchVacationRequest>())
+                    @foreach (var item in Model.ToList<SearchEmpLoanRequest>())
                     {
                         <tr class="rw">
                             <td>@item.EmpName1</td>
                             <td>@item.Jname1</td>
                             <td>@item.DocTrNo</td>
-                            <td>@item.FromDate?.ToString("dd/MM/yyyy")</td>
-                            <td>@item.ToDate?.ToString("dd/MM/yyyy")</td>
-                            <td>@item.DayCount</td>
+                            <td>@item.TrDate?.ToString("dd/MM/yyyy")</td>
+                            <td>@item.LoanValue?.ToString("0.00")</td>
+                            <td>@item.Installments</td>
+                            <td>@item.InstallmentValue?.ToString("0.00")</td>
                             @if (item.Closed == null)
                             {
                                 <td>الطلب تحت المراجعه</td>
@@ -124,27 +79,24 @@
                             <td>@item.CloseDate?.ToString("dd/MM/yyyy")</td>
                             <td>@item.Remarks1</td>
                             <td>@item.Remarks3</td>
-                            <td><a style="font-size :smaller" asp-action="Edit" asp-route-VacRequestId="@item.VacRequestId" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i></a></td>
-                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn-outline-primary js-accept" data-id="@item.VacRequestId"><i class="bi bi-check2-circle"></i></a></td>
-                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn btn-outline-danger js-refuse" data-id="@item.VacRequestId"><i class="bi bi-x-circle-fill"></i></a></td>
-                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn-danger js-delete " data-id="@item.VacRequestId"><i class="fa fa-trash-alt"></i></a></td>
+                            <td><a style="font-size :smaller" asp-action="Edit" asp-route-EmpLoanReqId="@item.EmpLoanReqId" class="btn btn-outline-info"><i class="fa fa-pencil-alt"></i></a></td>
+                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn-outline-primary js-accept" data-id="@item.EmpLoanReqId"><i class="bi bi-check2-circle"></i></a></td>
+                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn btn-outline-danger js-refuse" data-id="@item.EmpLoanReqId"><i class="bi bi-x-circle-fill"></i></a></td>
+                            <td><a style="font-size :smaller" href="javascript:;" class="btn btn-danger js-delete " data-id="@item.EmpLoanReqId"><i class="fa fa-trash-alt"></i></a></td>
                         </tr>
                     }
 
                 </tbody>
             </table>
-            @Html.PagedListPager(Model, pageIndex => Url.Action("Index", new { pageIndex  }) )
+            @Html.PagedListPager(Model, pageIndex => Url.Action("filter", new { pageIndex  }) )
 
         </div>
-
     }
-
 
 </div>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-
 
 
 @section Scripts  {
@@ -154,7 +106,7 @@
                 var btn = $(this);
                 Swal.fire({
                     title: 'تأكيد الحذف',
-                    text: 'هل أنت متأكد من رغبتك في حذف طلب الاجازه؟',
+                    text: 'هل أنت متأكد من رغبتك في حذف طلب السلفه؟',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -164,12 +116,12 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: '/VacationRequest/delete/' + btn.data('id'),
+                            url: '/PermissionRequest/delete/' + btn.data('id'),
                             success: function () {
                                 btn.parents('.rw').fadeOut();
                                 Swal.fire({
                                     title: 'تم الحذف بنجاح',
-                                    text: 'تم حذف طلب الاجازه بنجاح!',
+                                    text: 'تم حذف طلب السلفه بنجاح!',
                                     icon: 'success'
                                 });
                             },
@@ -189,11 +141,11 @@
             $('.js-accept').on('click', function () {
                 var btnAccept = $(this);
                 $.ajax({
-                    url: '/VacationRequest/Accept/' + btnAccept.data('id'),
+                    url: '/PermissionRequest/Accept/' + btnAccept.data('id'),
                     success: function () {
                         Swal.fire({
                             title: 'تم  بنجاح',
-                            text: 'تم الموافقه علي الطلب ',
+                            text: 'تم الموافقه علي طلب السلفه ',
                             icon: 'success'
                         });
                         btnAccept.parents('.rw').fadeOut();
@@ -212,11 +164,11 @@
             $('.js-refuse').on('click', function () {
                 var btnRefuse = $(this);
                 $.ajax({
-                    url: '/VacationRequest/Refuse/' + btnRefuse.data('id'),
+                    url: '/PermissionRequest/Refuse/' + btnRefuse.data('id'),
                     success: function () {
                         Swal.fire({
                             title: 'تم  بنجاح',
-                            text: 'تم رفض طلب الاجازه',
+                            text: 'تم رفض طلب السلفه',
                             icon: 'success'
                         });
                         btnRefuse.parents('.rw').fadeOut();

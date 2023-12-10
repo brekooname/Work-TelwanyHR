@@ -476,6 +476,7 @@ namespace HR.BLL
             var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList().Select(x => new
             {
                 name = x.Name1,
+                imageurl = x.ImageUrl,
                 code = x.EmpCode,
                 id = x.EmpId,
                 Gender=  x.Gender.Value?"انثى":"ذكر"

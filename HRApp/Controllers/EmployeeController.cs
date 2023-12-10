@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 
 using HR.BLL;
 using HR.BLL.DTO;
+using HR.DAL;
+using HR.Static;
 using HR.Tables.Tables;
 using HR.Web.Helper;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NToastNotify;
+using X.PagedList;
 
 namespace HRApp.Controllers
 {
@@ -26,10 +30,13 @@ namespace HRApp.Controllers
         AccountBll _AccountBll;
         ReportsBLL _reportsBLL;
         IWebHostEnvironment _webHostEnvironment;
+        private readonly SmartERPStandardContext _db;
+        private readonly IToastNotification _toaster;
 
         public EmployeeController(StoreBLL storeBLL, ShiftBLL shiftBLL, JobBLL jobBLL, LocationBLL 
             locationBLL, EmployeeBll employeeBll, AccountBll accountBll,
-            ReportsBLL reportsBLL, IWebHostEnvironment webHostEnvironment)
+            ReportsBLL reportsBLL, IWebHostEnvironment webHostEnvironment,
+            SmartERPStandardContext db , IToastNotification toaster)
         {
             _StoreBLL = storeBLL;
             _ShiftBLL = shiftBLL;
@@ -39,6 +46,8 @@ namespace HRApp.Controllers
             _AccountBll = accountBll;
             _reportsBLL = reportsBLL;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
+            _toaster = toaster;
         }
         
         public IActionResult Index()
@@ -58,6 +67,7 @@ namespace HRApp.Controllers
             return View();
         }
         
+
         public IActionResult AttendanceReport()
         {
             return View();
@@ -79,7 +89,101 @@ namespace HRApp.Controllers
 
             return View();
         }
-        
+        public async Task<IActionResult> createAddendance()
+        {
+            var model = new CreateAttendanceDto()
+            {
+                Employees = await _db.HrEmployees.Where(e => e.DeletedBy == null && e.DeletedAt == null).ToListAsync(),
+                stores = await _db.MsStores.Where(e => e.DeletedBy == null && e.DeletedAt == null).ToListAsync(),
+                shifts = await _db.HrShifts.Where(s=>s.DeletedAt == null && s.DeletedBy == null).ToListAsync()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> createAddendance(CreateAttendanceDto dto)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                dto.Employees = await _db.HrEmployees.Where(e => e.DeletedBy == null && e.DeletedAt == null).ToListAsync();
+                dto.stores = await _db.MsStores.Where(e => e.DeletedBy == null && e.DeletedAt == null).ToListAsync();
+                dto.shifts = await _db.HrShifts.Where(s => s.DeletedAt == null && s.DeletedBy == null).ToListAsync();
+                return View(dto);
+
+            }
+
+            var AddAttendance = new Mobile_Attendance
+            {
+                Emp_Id = dto.Emp_Id,
+                TrDate = dto.TrDate,
+                In = dto.In,
+                StoreId = dto.StoreId,
+                ShftId = dto.ShftId
+            };
+
+            _db.Mobile_Attendance.Add(AddAttendance);
+            _db.SaveChanges();
+            _toaster.AddSuccessToastMessage("تم أضافة الطلب بنجاح");
+            return RedirectToAction("Report");
+        }
+
+        [HttpGet]
+        public JsonResult EditAttendance(int? id)
+        {
+            var GetAttendanceRecord = _db.Mobile_Attendance.Find(id);
+            return Json(GetAttendanceRecord);
+        }
+
+        [HttpPost]
+        public JsonResult UpdateAttendance(ModifyingAttendanceDto dto)
+        {
+            if (ModelState.IsValid)
+            {
+                 Mobile_Attendance GetRecord = _db.Mobile_Attendance.Find(dto.AttendanceId);
+                GetRecord.TrDate = dto.TrDate;
+                _db.SaveChanges();
+
+                return Json("تم التحديث بنجاح");
+            }
+            return Json("model validation failed.");
+
+        }
+
+        [HttpGet]     
+  
+        public IActionResult ModifyingAttendance(int? id)
+        {
+
+            Mobile_Attendance GetAttendance = _db.Mobile_Attendance.FirstOrDefault(a => a.AttendanceId == id);
+            if (GetAttendance == null)
+                return NotFound();
+            HrEmployees getEmploye = _db.HrEmployees.FirstOrDefault(e => e.EmpId == GetAttendance.Emp_Id);
+            ModifyingAttendanceDto GetAttendanceDto = new ModifyingAttendanceDto()
+            {
+                AttendanceId = GetAttendance.AttendanceId,
+                TrDate = GetAttendance.TrDate,
+                EmployeeName = getEmploye.Name1 ?? ""
+
+            };
+
+            return View("FormModifyingAttendance", GetAttendanceDto);
+
+        }
+        [HttpPost]
+        public IActionResult ModifyingAttendance(ModifyingAttendanceDto dto)
+        {
+
+            Mobile_Attendance GetAttendance = _db.Mobile_Attendance.FirstOrDefault(a => a.AttendanceId == dto.AttendanceId);
+
+            if (GetAttendance == null)
+                return NotFound();
+
+            GetAttendance.TrDate = dto.TrDate;
+
+            _db.SaveChanges();
+            return RedirectToAction("report");
+        }
         public JsonResult GetEmployees(int ?id)
             => Json(_EmployeeBll.getEmployeesNotHaveUser(id));
         

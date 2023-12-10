@@ -9,7 +9,16 @@ namespace HR.Tables.Tables
 {
     public partial class SearchVacationRequest
     {
+        public int VacRequestId { get; set; }
+
         public string DocTrNo { get; set; }
+        public string Remarks3 { get; set; }
+        public bool? Closed { get; set; }
+        public DateTime? CloseDate { get; set; }
+        public string UpdateBy { get; set; }
+        public DateTime? UpdateAt { get; set; }
+        public string DeletedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
         public int TrNo { get; set; }
         public DateTime? TrDate { get; set; }
         public string ManualTrNo { get; set; }

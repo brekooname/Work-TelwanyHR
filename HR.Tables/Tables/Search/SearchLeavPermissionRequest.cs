@@ -9,6 +9,8 @@ namespace HR.Tables.Tables
 {
     public partial class SearchLeavPermissionRequest
     {
+        public int LeavPermReqId { get; set; }
+
         public string DocTrNo { get; set; }
         public int TrNo { get; set; }
         public DateTime? TrDate { get; set; }
@@ -36,5 +38,12 @@ namespace HR.Tables.Tables
         public byte? TermType { get; set; }
         public int? TermId { get; set; }
         public int? StoreId { get; set; }
+        public string Remarks3 { get; set; }
+        public bool? Closed { get; set; }
+        public DateTime? CloseDate { get; set; }
+        public string UpdateBy { get; set; }
+        public DateTime? UpdateAt { get; set; }
+        public string DeletedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
     }
 }

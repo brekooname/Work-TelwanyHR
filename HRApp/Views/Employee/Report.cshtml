@@ -1,4 +1,44 @@
-﻿<div class="row">
+﻿
+@model ModifyingAttendanceDto
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">تعديل سجل حضور او انصراف</h5>
+                
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <input type="hidden" asp-for="AttendanceId" />
+
+            <div class="modal-body">
+                <label class="text-muted">التاريخ والوقت</label>
+                <input class="form-control" asp-for="TrDate" type="datetime-local" />
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="Update()" >تحديث</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">اغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a type="button" asp-action="createAddendance" class="btn btn-primary waves-effect waves-light">
+                        <i class="bi bi-plus"></i>
+                        أضافه حضور أو إنصراف</a>
+                </div>
+            </div>
+        </div>
+    </div> <!-- end col -->
+</div> <!-- end row -->
+
+<div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-body">
@@ -39,6 +79,7 @@
                             <th>الفرع</th>
                             <th>التاريخ والوقت</th>
                             <th>حضور ام انصراف</th>
+                            <th>تعديل</th>
                         </tr>
                     </thead>
                 </table>
@@ -51,8 +92,123 @@
 
 @section Scripts
 {
+    
     <script>
+        $(document).ready(function () {
+
+            tbl = $('#datatable').DataTable(LoadDataTableObj('@Url.GetAction("LoadAttendanceReportData")',
+                [
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.code ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.name ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.store ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.date ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.inOrOut ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return `<a class="btn btn-outline-secondary btn-sm edit"  onclick="EditAttendance('${data.id}')" data-bs-toggle="modal" data-bs-target="#exampleModal" id="buttonEdit" title="Edit">
+                                        <i class="fa fa-pencil-alt"></i>
+                                    </a>`;
+                        }
+                    }
+                ]
+            ));
+        });
+
+        function EditAttendance(id) {
+            $.ajax({
+                url: '/employee/EditAttendance?id=' + id,
+                type: 'get',
+                contentType: 'application/json;charset=utf-8',
+                dataType: 'json',
+                success: function (response) {
+                    if (response == null || response == undefined) {
+                        alert('خطأ أثناء جلب البيانات ');
+                    } else if (response.length == 0) {
+                        alert('لاتوجد داتا لهذا ال id = ' + id);
+                    } else {
+                        // استخدم البيانات response هنا بشكل صحيح
+                        console.log("All Response: " + JSON.stringify(response));
+                        $('#TrDate').val(response.trDate);
+                        $('#AttendanceId').val(response.attendanceId);
+                        console.log(response.attendanceId);
+                    }
+                },
+                error : function(){
+                    alert('something went wrong.');
+                }
+            });
+        }
+
+
+        function Search() {
+            let dateFrom = $('[name="dateFrom"]').val();
+            let dateTo = $('[name="dateTo"]').val();
+            tbl.ajax.url(`@Url.GetAction("LoadAttendanceReportData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null, false);
+        }
+
+        function Update(){
+
+            var formData = {}; // استخدام الأقواس الزوجية لإنشاء كائن
+            formData.AttendanceId = $('#AttendanceId').val();
+            formData.trDate = $('#TrDate').val();
+
+            $.ajax({
+                url: '/employee/UpdateAttendance',
+                data: formData,
+                type: 'post',
+                success: function (response) {
+                    if (response == null || response == undefined) {
+                        alert('خطأ أثناء جلب البيانات ');
+                    } else if (response.length == 0) {
+                        alert('لاتوجد داتا لهذا ال id = ' + id);
+                    } else {
+                        window.location.href = '/employee/report';
+                        
+                    }
+                },
+                error: function () {
+                    alert('something went wrong.');
+                }
+            });
+        }
+    </script>
+
+   @* <script>
         let tbl;
+        let modifyingAttendanceUrl = '@Url.Action("ModifyingAttendance", "employee")';
+
         $(() => {
             tbl = $('#datatable').DataTable(LoadDataTableObj(`@Url.GetAction("LoadAttendanceReportData")`,
                 [
@@ -90,15 +246,31 @@
                         render: function (data, type, row) {
                             return '<label>' + (data.inOrOut ?? "") + '</label>'
                         }
+                    },
+                    {
+ 
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+
+                            return `  <a class="btn btn-outline-secondary btn-sm edit"  onclick="EditAttendance('${data.id}')" data-bs-toggle="modal" data-bs-target="#exampleModal" /*href="/Employee/ModifyingAttendance/${data.id}"*/ id="buttonEdit" title="Edit">
+                                                <i class="fa fa-pencil-alt"></i>
+                                            </a>
+                                         `;
+                        }
                     }
                 ]
             ));
         });
 
+        
         function Search() {
             let dateFrom = $('[name="dateFrom"]').val();
             let dateTo = $('[name="dateTo"]').val();
             tbl.ajax.url(`@Url.GetAction("LoadAttendanceReportData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null, false);
         }
-    </script>
+
+    </script>*@
+
+
 }

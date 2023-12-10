@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 using Newtonsoft.Json;
+using NToastNotify;
 
 namespace HRApp
 {
@@ -30,9 +31,11 @@ namespace HRApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+
             services.AddDbContext<SmartERPStandardContext>(options => options.UseSqlServer(SmtpConfig.GetConnectionString()));
             //Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure<SmtpConfig>(services, Configuration.GetSection("ConnectionString"));
-           
+          
             services.AddControllers();
             services.AddMvc();
             services.AddControllersWithViews();
@@ -87,6 +90,14 @@ namespace HRApp
             services.AddScoped(typeof(HomeBLL));
             services.AddScoped(typeof(SettingBLL));
             services.AddScoped(typeof(AppSettingBll));
+
+            services.AddMvc().AddNToastNotifyToastr(new ToastrOptions()
+            {
+                ProgressBar = true,
+                PositionClass = ToastPositions.TopRight,
+                PreventDuplicates = true,
+                CloseButton = true,
+            });
 
         }
 

@@ -160,7 +160,7 @@ namespace HR.BLL
             var data = query.Where(x => (mdl.SSearch.IsEmpty() || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
             || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower())));
 
-            data = (mdl.SSortDir_0) switch
+             data = (mdl.SSortDir_0) switch
             {
                 SortingDir.asc => data.OrderBy(x => x.AttendanceId),
                 SortingDir.Desc => data.OrderByDescending(x => x.AttendanceId),
@@ -169,6 +169,8 @@ namespace HR.BLL
 
             var _data = data.Skip(mdl.IDisplayStart).Take(mdl.IDisplayLength).ToList().Select(x => new
             {
+                // التعديل الذي تم اضافته علشان اقدر امسك السجل الخاص بالحضور والانصراف
+                id = x.AttendanceId,
                 name = x.HrEmployees != null ? x.HrEmployees.Name1 : "",
                 code = x.HrEmployees != null ? x.HrEmployees.EmpCode : "",
                 Store = x.MsStores != null ? x.MsStores.StoreDescA : "",
@@ -411,8 +413,47 @@ namespace HR.BLL
             //double distance = CalculateDistanceBetweenTwoPoints(location, new Point { lat = double.Parse(StoreLocation.Lat), lng = double.Parse(StoreLocation.Lng) });
             //var ch = distance >= 0 && distance <= 500;
 
-            double distance = this.distance(location.lat, location.lng, double.Parse(StoreLocation.Lat), double.Parse(StoreLocation.Lng), 'M');
-            var ch = distance <= 500;
+            // في  السطر هنا انا جبت جميع الفروع الخاصه بالموظف
+
+            var EmpBranches = _repHrEmpLocations.GetAll().Where(x => x.EmpId == EmpId).Include(x => x.HrLocation);
+
+            // و هنا جبت الفرع بتاعه الي من القيم الي بعتها في تسجيل الدخول 
+            //var EmployeeLocation = EmpBranches.FirstOrDefault(x =>
+            //    double.Parse(x.HrLocation.Lat) == location.lat &&
+            //    double.Parse(x.HrLocation.Lng) == location.lng);
+
+            //double distance;
+
+            //if (EmployeeLocation != null)
+            //{
+            //     distance = this.distance(location.lat, location.lng, double.Parse(EmployeeLocation.HrLocation.Lat), double.Parse(EmployeeLocation.HrLocation.Lng), 'M');
+
+            //}
+            //else
+            //{
+            //     distance = this.distance(location.lat, location.lng, double.Parse(StoreLocation.Lat), double.Parse(StoreLocation.Lng), 'M');
+
+            //}
+
+            //double distance = this.distance(location.lat, location.lng, double.Parse(StoreLocation.Lat), double.Parse(StoreLocation.Lng), 'M');
+
+            //var ch = distance <= 500;
+
+            var ch = false;
+            double distance = 0;
+
+            foreach (var empBranch in EmpBranches)
+            {
+                 distance = this.distance(location.lat, location.lng, double.Parse(empBranch.HrLocation.Lat), double.Parse(empBranch.HrLocation.Lng), 'M');
+
+                if (distance <= 500)
+                {
+                    // إذا كانت المسافة أقل من أو تساوي 500 متر
+                    ch = true;
+                    break; // يمكنك إزالة هذا إذا أردت متابعة التكرار حتى النهاية
+                }
+            }
+
 
             if (ch)
                 _repMobile_Attendance.Insert(new Mobile_Attendance

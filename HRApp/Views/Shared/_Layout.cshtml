@@ -250,9 +250,24 @@
                     <li>
                         <a asp-action="index" asp-controller="VacationRequest" class="waves-effect">
                             <i class='bx bxs-institution'></i>
-                            <span key="t-file-manager">طلبـات الاجازات</span>
+                            <span key="t-file-manager">طلبـات الإجازات</span>
                         </a>
                     </li>
+                  
+                    <li>
+                        <a asp-action="index" asp-controller="PermissionRequest" class="waves-effect">
+                            <i class='bx bxs-institution'></i>
+                            <span key="t-file-manager">طلبـات الإذونات</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a asp-action="Index" asp-controller="EmployeeLoanRequest" class="waves-effect">
+                            <i class='bx bxs-institution'></i>
+                            <span key="t-file-manager">طلبات السلف</span>
+                        </a>
+                    </li>
+
                     <li>
                         <a href="/Settings" class="waves-effect">
                             <i class="bx bx-money"></i>
@@ -512,6 +527,7 @@
     </script>
 
     @RenderSection("Scripts", false)
+    @await Component.InvokeAsync("NToastNotify")
 </body>
 
 

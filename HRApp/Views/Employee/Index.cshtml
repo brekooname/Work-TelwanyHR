@@ -9,7 +9,7 @@
             <div class="card-body">
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-3">
-                        <h4 class="card-title">اضافة موظف  </h4>
+                        <h4 class="card-title">إضافة موظف  </h4>
                     </div>
                     <div class="col-md-6 d-flex justify-content-center text-center">
                         <nav aria-label="Page navigation example">
@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3 custom-form">
-                                <label for="productname"> الاسم</label>
+                                <label for="productname"> الإسم</label>
                                 <input id="productname" name="Name1" type="text" class="form-control">
                             </div>
                         </div>
@@ -129,7 +129,7 @@
 
                         <div class="col-md-3">
                             <div class="mb-3 custom-form">
-                                <label for="productname">  فتره العمل</label>
+                                <label for="productname">  فترة العمل</label>
                                 <select class="form-control select2" id="ShiftId" multiple>
                                     <option value="" disabled="disabled">اختر</option>
                                     @foreach (var item in ViewData["shifts"] as IEnumerable<ShiftDTO>)
@@ -153,7 +153,7 @@
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3 custom-form">
-                                <label for="productname">  المرتب الشهرى</label>
+                                <label for="productname">  المرتب الشهري</label>
                                 <input id="productname" name="Salary" type="text" class="form-control" onKeyPress="return isNumberWithDotOnly(event)">
                             </div>
                         </div>
@@ -172,13 +172,13 @@
 
                         <div class="col-md-3">
                             <div class="mb-3 custom-form">
-                                <label for="productname"> اجمالى تكلفة اليومية</label>
+                                <label for="productname"> إجمالي تكلفة اليومية</label>
                                 <input id="productname" name="TotalDailyCost" type="text" class="form-control" onKeyPress="return isNumberWithDotOnly(event)">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="mb-3 custom-form">
-                                <label for="productname"> اجمالى تكلفة الساعة</label>
+                                <label for="productname"> إجمالي تكلفة الساعة</label>
                                 <input id="productname" name="TotalHourlyCost" type="text" class="form-control" onKeyPress="return isNumberWithDotOnly(event)">
                             </div>
                         </div>
@@ -214,11 +214,12 @@
                     <thead>
                         <tr>
                             <th>الكود</th>
-                            <th>الاسم</th>
+                            <th>الإسم</th>
+                            <th>الصوره</th>
                             <th>الجنس</th>
                             @*<th> الوظيفة</th>*@
                             @*<th> الفرع</th>*@
-                            @*<th> فتره العمل</th>*@
+                            @*<th> فترة العمل</th>*@
                             @*<th> موقع العمل</th>*@
                             <th>#</th>
 
@@ -280,6 +281,18 @@
                     bSortable: false,
                     render: function (data, type, row) {
                         return '<label>' + (data.name ?? "") + '</label>'
+                    }
+                },
+                {
+                    data: null,
+                    bSortable: false,
+                    render: function (data, type, row) {
+                        // تأكد من أن هناك بيانات للصورة وقم بإنشاء عنصر الصورة
+                        if (data.imageurl) {
+                            return '<img src="/Upload/' + data.imageurl + '" alt="صورة الموظف" style="max-width: 50px; max-height: 50px;" />';
+                        } else {
+                        return '<label>' + (data.imageurl ?? "") + '</label>'
+                        }
                     }
                 },
                 {

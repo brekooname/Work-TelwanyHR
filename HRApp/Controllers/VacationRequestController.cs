@@ -19,27 +19,19 @@ namespace HRApp.Controllers
 
         }
 
+
         public IActionResult Index(int pageIndex = 1, int pageSize = 20)
         {
-            var item = (from emp in _db.HrEmployees
-                       join vaca in _db.HrVacationRequest on emp.EmpId equals vaca.EmpId
-                       where vaca.DeletedBy == null
-                       select new HR_EmployeeAndVacationRequestDto
-                       {
-                           EmpId = emp.EmpId,
-                           VacRequestId = vaca.VacRequestId,
-                           name = emp.Name1,
-                           VacaEmpId = (int)vaca.EmpId,
-                           fromDate = (System.DateTime)vaca.FromDate,
-                           ToDate = (System.DateTime)vaca.ToDate,
-                           DayCount = (int)vaca.DayCount,
-                           Closed = (bool)vaca.Closed,
-                           CloseDate = (System.DateTime)vaca.CloseDate,
-                           Remarks1 = vaca.Remarks1,
-                           Remarks3 = vaca.Remarks3,
-                       }).ToPagedList(pageIndex, pageSize);
-
-            return View(item);
+            try
+            {
+                var item = _db.SearchVacationRequest.Where(s => s.DeletedBy == null).ToPagedList(pageIndex, pageSize);
+                return View(item);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return View();
+            }
         }
 
         public IActionResult Edit(int? VacRequestId)
@@ -81,6 +73,7 @@ namespace HRApp.Controllers
             vacation.DayCount = Vac.DayCount;
             vacation.Remarks3 = Vac.Remarks3;
             vacation.Closed = Vac.Closed;
+            vacation.UpdateAt = DateTime.Now;
 
 
             _db.SaveChanges();
@@ -89,34 +82,26 @@ namespace HRApp.Controllers
 
         }
 
-        public IActionResult filter(bool? dropSelect , DateTime? FromDate, DateTime? ToDate , int pageIndex = 1, int pageSize = 20)
+        public IActionResult filter(string EmpName, bool? dropSelect , DateTime? FromDate, DateTime? ToDate , int pageIndex = 1, int pageSize = 20)
         {
-            var query =from emp in _db.HrEmployees
-                        join vaca in _db.HrVacationRequest on emp.EmpId equals vaca.EmpId
-                        where vaca.DeletedBy == null
-                       select new HR_EmployeeAndVacationRequestDto
-                        {
-                            EmpId = emp.EmpId,
-                            VacRequestId = vaca.VacRequestId,
-                            name = emp.Name1,
-                            VacaEmpId = (int)vaca.EmpId,
-                            fromDate = (System.DateTime)vaca.FromDate,
-                            ToDate = (System.DateTime)vaca.ToDate,
-                            DayCount = (int)vaca.DayCount,
-                            Closed = (bool)vaca.Closed,
-                            CloseDate = (System.DateTime)vaca.CloseDate,
-                            Remarks1 = vaca.Remarks1,
-                            Remarks3 = vaca.Remarks3,
-                        };
+           
 
-           if (!dropSelect.HasValue)
+            var query = _db.SearchVacationRequest.Where(v => v.DeletedBy == null);
+
+            if (!string.IsNullOrEmpty(EmpName))
+            {
+                query = query.Where(vaca => vaca.EmpName1.StartsWith(EmpName));
+            }
+
+
+            if (!dropSelect.HasValue)
                 query = query.Where(vaca => vaca.Closed == null);
 
             if (dropSelect.HasValue)
                 query = query.Where(vaca => vaca.Closed == dropSelect.Value);
 
             if (FromDate.HasValue)
-                query = query.Where(vaca => vaca.fromDate >= FromDate);
+                query = query.Where(vaca => vaca.FromDate >= FromDate);
 
             if (ToDate.HasValue)
                 query = query.Where(vaca => vaca.ToDate <= ToDate);
@@ -128,8 +113,38 @@ namespace HRApp.Controllers
 
         }
 
+        public async Task<IActionResult> Accept(int? id)
+        {
+            if (id == null) return BadRequest();
 
-       public IActionResult delete(int? id)
+            var vacation = await _db.HrVacationRequest.FindAsync(id);
+
+            if (vacation == null) return NotFound();
+
+            vacation.Closed = true;
+            vacation.CloseDate = DateTime.Now;
+
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
+        public async Task<IActionResult> Refuse(int? id)
+        {
+            if (id == null) return BadRequest();
+
+            var vacation = await _db.HrVacationRequest.FindAsync(id);
+
+            if (vacation == null) return NotFound();
+
+            vacation.Closed = false;
+            vacation.CloseDate = DateTime.Now;
+
+            _db.SaveChanges();
+            return RedirectToAction("index");
+        }
+
+        public IActionResult delete(int? id)
         {
             if (id == null) return BadRequest();
 
