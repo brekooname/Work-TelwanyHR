@@ -217,31 +217,43 @@ namespace HR.BLL
             DataTable dataTable = new DataTable("attendances");
             dataTable.Columns.AddRange(new DataColumn[]
             {
-                new DataColumn("حضور/إنصرف"),
-                new DataColumn("الموقع"),
-                new DataColumn("الفرع"),
-                new DataColumn("الوقت"),
-                new DataColumn("الاسم"),
                 new DataColumn("الكود"),
-
+                new DataColumn("الاسم"),
+                new DataColumn("الوقت"),
+                new DataColumn("الفرع"),
+                new DataColumn("الموقع"),
+                new DataColumn("حضور/إنصرف"),
             });
 
             foreach (var attendance in attendances)
             {
                 dataTable.Rows
-                    .Add(attendance.In.Value ? "حضور" : "انصراف",
-                         attendance.LocationName,
-                         attendance.MsStores.StoreDescA,
-                         attendance.TrDate.Value.ToString("dd-MM-yyyy HH:mm"),
+                    .Add(
+                         attendance.HrEmployees.EmpCode,
                          attendance.HrEmployees.Name1,
-                         attendance.HrEmployees.EmpCode
-                         
+                         attendance.TrDate.Value.ToString("dd-MM-yyyy HH:mm"),
+                         attendance.MsStores.StoreDescA,
+                         attendance.LocationName,
+                         attendance.In.Value ? "حضور" : "انصراف"
                           );
             }
 
             using (XLWorkbook wb = new XLWorkbook())
             {
-                 wb.Worksheets.Add(dataTable);
+                var ws = wb.Worksheets.Add(dataTable);
+
+                // first update
+                //wb.Worksheets.Add(dataTable);
+
+                var headerRow = ws.Row(1);
+                headerRow.Style.Font.Bold = true;
+                headerRow.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                ws.Columns().AdjustToContents();
+                ws.RightToLeft = true;
+
+                var dataRows = ws.Rows(2, ws.LastRowUsed().RowNumber());
+                dataRows.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
                 using (MemoryStream stream = new MemoryStream())
                 {
                     wb.SaveAs(stream);
