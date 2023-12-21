@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using ClosedXML.Excel;
 using HR.BLL.DTO;
 using HR.BLL.Helper;
 using HR.Common;
 using HR.DAL;
 using HR.Static;
 using HR.Tables.Tables;
-
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,8 @@ using static HR.BLL.AccountBll;
 
 using Point = HR.BLL.DTO.Point;
 
+
+
 namespace HR.BLL
 {
     public class AccountBll
@@ -35,6 +38,8 @@ namespace HR.BLL
         private readonly IRepository<HrEmpKPIS> _repKPISEmployee;
         private readonly IRepository<GUsers> _repUser;
         private readonly IRepository<Mobile_Attendance> _repMobile_Attendance;
+        private readonly IRepository<MsStores> _msStores;
+        private readonly IRepository<HrLocation> _hrLocation;
         private readonly IRepository<HrEmpShift> _repHrEmpShift;
         private readonly IRepository<HrEmpStore> _repHrEmpStore;
         private readonly IRepository<HrEmpLocations> _repHrEmpLocations;
@@ -45,7 +50,8 @@ namespace HR.BLL
         public AccountBll(IRepository<GUsers> repUser, IRepository<MsCompany> repCompany,
             IJwtAuthentication jwtAuthentication,
             EmployeeBll employeeBll, IRepository<Mobile_Attendance> repMobile_Attendance, IRepository<HrEmpShift> repHrEmpShift,
-            IRepository<HrEmpStore> repHrEmpStore, IRepository<HrEmpLocations> repHrEmpLocations, IRepository<HrEmpKPIS> repKPISEmployee)
+            IRepository<HrEmpStore> repHrEmpStore, IRepository<HrEmpLocations> repHrEmpLocations, IRepository<HrEmpKPIS> repKPISEmployee,
+            IRepository<MsStores> msStores , IRepository<HrLocation> hrLocation)
         {
             _repMobile_Attendance = repMobile_Attendance;
             _repUser = repUser;
@@ -56,6 +62,8 @@ namespace HR.BLL
             _repHrEmpLocations = repHrEmpLocations;
             _repKPISEmployee = repKPISEmployee;
             _repCompany = repCompany;
+            _msStores = msStores;
+            _hrLocation = hrLocation;
         }
 
         public string GetLogo()
@@ -176,11 +184,78 @@ namespace HR.BLL
                 Store = x.MsStores != null ? x.MsStores.StoreDescA : "",
                 Date = x.TrDate.HasValue ? x.TrDate.Value.ToString("dd-MM-yyyy HH:mm") : "",
                 Status = x.Status,
-                InOrOut = x.In.Value ? "حضور" : "انصراف"
+                InOrOut = x.In.Value ? "حضور" : "انصراف",
+                locationName = x.LocationName
             });
 
             return new DataTableResponse(total, _data.ToList());
         }
+
+        public FileResult LoadAttendanceDataToExel(DataTableDTO mdl)
+        {
+            var query = _repMobile_Attendance.GetAll().Where(x => (!mdl.dateFrom.HasValue || x.TrDate.Value.Date >= mdl.dateFrom.Value.Date)
+            && (!mdl.dateTo.HasValue || x.TrDate.Value.Date <= mdl.dateTo.Value.Date)).Include(x => x.HrEmployees).Include(x => x.MsStores).Include(x => x.HrShifts);
+            var total = query?.Count() ?? 0;
+
+            var data = query.Where(x => (mdl.SSearch.IsEmpty() || x.HrEmployees.EmpCode.ToLower().Contains(mdl.SSearch.ToLower())
+            || x.HrEmployees.Name1.ToLower().Contains(mdl.SSearch.ToLower())));
+
+            data = (mdl.SSortDir_0) switch
+            {
+                SortingDir.asc => data.OrderBy(x => x.AttendanceId),
+                SortingDir.Desc => data.OrderByDescending(x => x.AttendanceId),
+                _ => data
+            };
+
+            string FileName = "SoftGo_Report.xlsx";
+
+            return GenerateExel(FileName, data);
+        }
+
+        private FileResult GenerateExel(string fileName , IEnumerable<Mobile_Attendance> attendances)
+        {
+            DataTable dataTable = new DataTable("attendances");
+            dataTable.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("حضور/إنصرف"),
+                new DataColumn("الموقع"),
+                new DataColumn("الفرع"),
+                new DataColumn("الوقت"),
+                new DataColumn("الاسم"),
+                new DataColumn("الكود"),
+
+            });
+
+            foreach (var attendance in attendances)
+            {
+                dataTable.Rows
+                    .Add(attendance.In.Value ? "حضور" : "انصراف",
+                         attendance.LocationName,
+                         attendance.MsStores.StoreDescA,
+                         attendance.TrDate.Value.ToString("dd-MM-yyyy HH:mm"),
+                         attendance.HrEmployees.Name1,
+                         attendance.HrEmployees.EmpCode
+                         
+                          );
+            }
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                 wb.Worksheets.Add(dataTable);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    var fileResult = new FileContentResult(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    {
+                        FileDownloadName = fileName
+                    };
+
+                    return fileResult;
+                }
+            }
+
+        }
+
 
         public string GetUserData(int id)
         {
@@ -288,6 +363,7 @@ namespace HR.BLL
             int? shiftId = null;
             var dateNow = DateTime.UtcNow.AddHours(HourServer.hours);
             var now = dateNow.Date;
+            string theLocation = "";
 
             Location StoreLocation = new Location();
             if (shift)
@@ -381,7 +457,7 @@ namespace HR.BLL
             else
             {
                 var checkIfAttend = _repMobile_Attendance.GetAll()
-                  .Where(x => x.Emp_Id == EmpId && x.TrDate.Value.Date == now && x.In == In && (!x.Status.HasValue || x.Status.Value));
+                  .Where(x => x.Emp_Id == EmpId && x.TrDate.Value.Date == DateTime.Now && x.In == In && (!x.Status.HasValue || x.Status.Value));
 
                 if (checkIfAttend.Any())
                 {
@@ -450,6 +526,14 @@ namespace HR.BLL
                 {
                     // إذا كانت المسافة أقل من أو تساوي 500 متر
                     ch = true;
+
+
+                    var EmpLocationLogin = _hrLocation.GetAll().Where(s => s.Lat == empBranch.HrLocation.Lat && s.Lng == empBranch.HrLocation.Lng).FirstOrDefault();
+
+                    if (EmpLocationLogin != null)
+                    {
+                        theLocation = EmpLocationLogin.Name1;
+                    }
                     break; // يمكنك إزالة هذا إذا أردت متابعة التكرار حتى النهاية
                 }
             }
@@ -466,7 +550,8 @@ namespace HR.BLL
                     ShftId = shiftId,
                     TrDate = DateTime.UtcNow.AddHours(HourServer.hours),
                     Distance = distance,
-                    Qr = location.Qr
+                    Qr = location.Qr,
+                    LocationName = theLocation
                 });
 
             //return new

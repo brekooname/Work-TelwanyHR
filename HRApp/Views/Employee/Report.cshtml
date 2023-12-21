@@ -40,27 +40,32 @@
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="manufacturername"> من تاريخ </label>
-                            <input id="manufacturername" name="dateFrom" type="date" class="form-control">
+        <form asp-action="LoadAttendanceReportDataToExel">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="manufacturername"> من تاريخ </label>
+                                <input id="manufacturername" name="dateFrom" type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="manufacturername">الى تاريخ  </label>
+                                <input id="manufacturername" name="dateTo" type="date" class="form-control">
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="manufacturername">الى تاريخ  </label>
-                            <input id="manufacturername" name="dateTo" type="date" class="form-control">
-                        </div>
+                    <div class="d-flex flex-wrap gap-2 float-end">
+                        <button type="button" onclick="Search()" class="btn btn-primary waves-effect waves-light">بحث </button>
                     </div>
-                </div>
-                <div class="d-flex flex-wrap gap-2 float-end">
-                    <button type="button" onclick="Search()" class="btn btn-primary waves-effect waves-light">بحث </button>
+                    <div class="d-flex flex-wrap gap-2 float-end">
+                        <button type="submit" class="btn btn-primary waves-effect waves-light">طباعه </button>
+                    </div>
                 </div>
             </div>
-        </div>
+      </form>
     </div> <!-- end col -->
 </div> <!-- end row -->
 
@@ -77,6 +82,7 @@
                             <th>كود الموظف</th>
                             <th>الموظف</th>
                             <th>الفرع</th>
+                            <th>الموقع</th>
                             <th>التاريخ والوقت</th>
                             <th>حضور ام انصراف</th>
                             <th>تعديل</th>
@@ -92,7 +98,8 @@
 
 @section Scripts
 {
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
     <script>
         $(document).ready(function () {
 
@@ -117,6 +124,13 @@
                         bSortable: false,
                         render: function (data, type, row) {
                             return '<label>' + (data.store ?? "") + '</label>';
+                        }
+                    },
+                    {
+                        data: null,
+                        bSortable: false,
+                        render: function (data, type, row) {
+                            return '<label>' + (data.locationName ?? "") + '</label>';
                         }
                     },
                     {
@@ -160,7 +174,9 @@
                     } else {
                         // استخدم البيانات response هنا بشكل صحيح
                         console.log("All Response: " + JSON.stringify(response));
-                        $('#TrDate').val(response.trDate);
+                        var formattedDate = moment(response.trDate).format("YYYY-MM-DDTHH:mm:ss");
+
+                        $('#TrDate').val(formattedDate);
                         $('#AttendanceId').val(response.attendanceId);
                         console.log(response.attendanceId);
                     }
@@ -176,6 +192,12 @@
             let dateFrom = $('[name="dateFrom"]').val();
             let dateTo = $('[name="dateTo"]').val();
             tbl.ajax.url(`@Url.GetAction("LoadAttendanceReportData")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null, false);
+        }
+
+        function ExportToExel() {
+            let dateFrom = $('[name="dateFrom"]').val();
+            let dateTo = $('[name="dateTo"]').val();
+            tbl.ajax.url(`@Url.GetAction("LoadAttendanceReportDataToExel")?dateTo=${dateTo}&dateFrom=${dateFrom}`).load(null, false);
         }
 
         function Update(){

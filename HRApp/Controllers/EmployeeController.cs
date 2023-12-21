@@ -253,6 +253,12 @@ namespace HRApp.Controllers
             return Json(_AccountBll.LoadAttendanceData(mdl));
         }
 
+        public FileResult LoadAttendanceReportDataToExel(DataTableDTO mdl)
+        {
+             var fiel = _AccountBll.LoadAttendanceDataToExel(mdl);
+
+            return fiel;
+        }
         public JsonResult LoadDelayReportData(DataTableDTO mdl)
         {
             return Json(_reportsBLL.LoadDelayReport(mdl));

@@ -1,4 +1,4 @@
 ﻿{
-	"ConnectionString": "Data Source=.;Initial Catalog=TelwanyHR;User Id=softgo;Password=A271185b;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;",
+	"ConnectionString": "Data Source=DESKTOP-V32V88M\\MOKHTAR;Initial Catalog=TelwanyHR;User Id=sa;Password=A271185b;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;",
 	"DynamicConnection": "Data Source=.;Initial Catalog=AppSetting;User Id=sa;Password=A271185b;Integrated security=False;MultipleActiveResultSets=true;TrustServerCertificate=true;"
 }

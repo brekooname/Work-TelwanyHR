@@ -22,6 +22,7 @@ namespace HR.Tables.Tables
         public bool? Status { get; set; }
         public double? Distance { get; set; }
         public string Qr { get; set; }
+        public string LocationName { get; set; }
         public HrShifts HrShifts { get; set; }
         public HrEmployees HrEmployees { get; set; }
         public MsStores MsStores { get; set; }
