@@ -131,17 +131,19 @@ namespace HR.BLL
                 }
             }
 
-            return new DataTableResponse(data.FirstOrDefault()?.Total ?? 0, data.ToList().Select(x => new
-            {
-                EmployeeName = x.Name1,
-                Delay = new
-                {
-                    dailyCost = x.DailyCost,
-                    hour = (x.MinCount / 60).ToString(),
-                    Minute = (x.MinCount - (x.MinCount / 60) * 60).ToString()
-                },
-                DelayCost = Math.Round(x.DelayCost, 3)
-            }));
+          var response =   new DataTableResponse(data.FirstOrDefault()?.Total ?? 0, data.ToList().Select(x => new
+                           {
+                               EmployeeName = x.Name1,
+                               Delay = new
+                               {
+                                   dailyCost = x.DailyCost,
+                                   hour = (x.MinCount / 60).ToString(),
+                                   Minute = (x.MinCount - (x.MinCount / 60) * 60).ToString()
+                               },
+                               DelayCost = Math.Round(x.DelayCost, 3)
+                           }));
+                      
+            return response;
         }
 
         public DataTableResponse LoadDelayDetailsReport(DataTableDTO mdl)
